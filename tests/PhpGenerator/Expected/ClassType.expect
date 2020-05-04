@@ -1,0 +1,56 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Description of class.
+ * This is example
+ * 
+ * @property-read Sidux\Forms\Form $form
+ */
+abstract class Example extends ParentClass implements IExample, IOne
+{
+    use ObjectTrait;
+    use AnotherTrait {
+        sayHello as protected;
+    }
+
+    public const ROLE = 'admin';
+
+    public const ACTIVE = false;
+
+    /**
+     * Commented
+     */
+    private const FORCE_ARRAY = Sidux\PhpGenerator\Helper\Json::FORCE_ARRAY;
+
+    /**
+     * @var resource  orignal file handle
+     */
+    private $handle;
+
+    public $order = RecursiveIteratorIterator::SELF_FIRST;
+
+    public array $typed1;
+
+    public ?array $typed2 = null;
+
+    public static $sections = ['first' => true];
+
+    /**
+     * Returns file handle.
+     * @return resource
+     */
+    final public function getHandle()
+    {
+        return $this->handle;
+    }
+
+    protected static function &getSections($mode = self::ORDER)
+    {
+        $mode = 123;
+        return self::$sections;
+    }
+
+    abstract public function show($item, ?array &$res = null);
+}

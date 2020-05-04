@@ -1,0 +1,43 @@
+{
+    "name": "sidux/php-generator",
+    "description": "PHP Generator",
+    "keywords": ["php", "code", "generator"],
+    "license": [],
+    "authors": [
+        {
+            "name": "Ahmed Lebbada"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "roave/better-reflection": "^4.0@dev",
+        "phpdocumentor/type-resolver": "^1.0@dev"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-master",
+        "vimeo/psalm": "^3.0@dev",
+        "phpunit/phpunit": "^9.2@dev",
+        "phpstan/phpstan": "^0.12.0@dev",
+        "symfony/var-dumper": "^5.1@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sidux\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sidux\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "scripts": {
+        "phpstan": "phpstan analyse --level 5 src"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.0-alpha"
+        }
+    }
+}

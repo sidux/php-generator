@@ -1,0 +1,18 @@
+{
+    public $a;
+
+    private $b;
+
+    public function a()
+    {
+    }
+
+    private function b()
+    {
+    }
+}
+extends Sidux\PhpGenerator\Stub\Class10 {
+    public function a()
+    {
+    }
+}

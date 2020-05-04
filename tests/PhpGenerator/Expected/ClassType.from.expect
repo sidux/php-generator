@@ -1,0 +1,102 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Sidux\PhpGenerator\Stub;
+
+/**
+ * Interface
+ * 
+ * @author John Doe
+ */
+interface Interface1
+{
+    public function func1();
+}
+
+<?php
+
+declare(strict_types=1);
+
+namespace Sidux\PhpGenerator\Stub;
+
+interface Interface2
+{
+}
+
+<?php
+
+declare(strict_types=1);
+
+namespace Sidux\PhpGenerator\Stub;
+
+abstract class Class1 implements Interface1
+{
+    /**
+     * @return Class1
+     */
+    public function func1()
+    {
+    }
+
+    abstract protected function func2();
+}
+
+<?php
+
+declare(strict_types=1);
+
+namespace Sidux\PhpGenerator\Stub;
+
+class Class3
+{
+    public $prop1;
+}
+
+<?php
+
+declare(strict_types=1);
+
+namespace Sidux\PhpGenerator\Stub;
+
+class Class4
+{
+    public const THE_CONSTANT = 9;
+}
+
+<?php
+
+declare(strict_types=1);
+
+namespace Sidux\PhpGenerator\Stub;
+
+/**
+ * 
+ */
+class Class5
+{
+    public function func1(A $a, ?B $b, ?\C $c = null, ?\D $d = null, \E $e, ?int $i = 1, ?array $arr = [])
+    {
+    }
+
+    public function func2(): ?\stdClass
+    {
+    }
+
+    public function func3(): void
+    {
+    }
+}
+
+<?php
+
+declare(strict_types=1);
+
+namespace Sidux\PhpGenerator\Stub;
+
+class Class6
+{
+    public const THE_PRIVATE_CONSTANT = 9;
+
+    public const THE_PUBLIC_CONSTANT = 9;
+}
