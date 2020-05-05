@@ -489,10 +489,10 @@ final class PhpStruct implements NamespaceAware
         return $this->extends[$name];
     }
 
-    public function addGetter(string $propertyName): PhpMethod
+    public function addGetter(string $propertyName, string $prefix = null): PhpMethod
     {
         $property = $this->getProperty($propertyName);
-        $prefix   = $property->getTypeHint() === PhpType::BOOL ? 'is' : 'get';
+        $prefix   ??= $property->getTypeHint() === PhpType::BOOL ? 'is' : 'get';
         $method   = new PhpMethod($prefix . ucfirst($propertyName));
         $method->setVisibility(self::VISIBILITY_PUBLIC);
         $method->addBody("return \$this->$propertyName;");
@@ -501,10 +501,9 @@ final class PhpStruct implements NamespaceAware
         return $this->addMethod($method);
     }
 
-    public function addSetter(string $propertyName): PhpMethod
+    public function addSetter(string $propertyName, string $prefix = 'set'): PhpMethod
     {
         $property = $this->getProperty($propertyName);
-        $prefix   = 'set';
         $method   = new PhpMethod($prefix . ucfirst($propertyName));
         $method->setVisibility(self::VISIBILITY_PUBLIC);
         $method->addParameter($property->getName())
