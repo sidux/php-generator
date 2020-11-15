@@ -516,7 +516,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
                ->setValue($property->getValue())
                ->setTypes($property->getTypes())
         ;
-        $method->addBody("\$this->$propertyName = $propertyName;");
+        $method->addBody("\$this->$propertyName = \$$propertyName;");
         $method->addBody('return $this;');
         $method->addType(PhpType::SELF);
 

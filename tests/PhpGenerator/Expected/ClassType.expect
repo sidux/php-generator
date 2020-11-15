@@ -42,6 +42,12 @@ abstract class Example extends ParentClass implements IExample, IOne
         return new self();
     }
 
+    public function setTyped2(?array $typed2 = null): self
+    {
+        $this->typed2 = $typed2;
+        return $this;
+    }
+
     /**
      * Returns file handle.
      * @return resource
