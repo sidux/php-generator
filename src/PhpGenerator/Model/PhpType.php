@@ -14,8 +14,7 @@ use Sidux\PhpGenerator\Model\Part;
 
 class PhpType implements PhpElement
 {
-    use Part\ParentAwareTrait;
-    use Helper\Traits\StaticCreateAwareTrait;
+    use Part\NamespaceAwareTrait;
     use Helper\Traits\MethodOverloadAwareTrait;
 
     public const INTERNAL_TYPES = [
@@ -119,7 +118,7 @@ class PhpType implements PhpElement
     public static function fromReflectionType(ReflectionType $ref): self
     {
         $name = (string)$ref;
-        if (!$ref->isBuiltin() && strpos($name, '\\') === false) {
+        if (!$ref->isBuiltin() && false === strpos($name, '\\')) {
             $name = '\\' . $name;
         }
         $type           = self::create($name);
@@ -136,27 +135,27 @@ class PhpType implements PhpElement
 
     public static function getType($value): ?string
     {
-        if (is_object($value)) {
-            return get_class($value);
+        if (\is_object($value)) {
+            return \get_class($value);
         }
 
-        if (is_int($value)) {
+        if (\is_int($value)) {
             return self::INT;
         }
 
-        if (is_float($value)) {
+        if (\is_float($value)) {
             return self::FLOAT;
         }
 
-        if (is_string($value)) {
+        if (\is_string($value)) {
             return self::STRING;
         }
 
-        if (is_bool($value)) {
+        if (\is_bool($value)) {
             return self::BOOL;
         }
 
-        if (is_array($value)) {
+        if (\is_array($value)) {
             return self::ARRAY;
         }
 
@@ -203,7 +202,7 @@ class PhpType implements PhpElement
 
     public function isHintable(): bool
     {
-        return !$this->isCollection() && !in_array($this->value, [self::NULL, self::PARENT], true);
+        return !$this->isCollection() && !\in_array($this->name, [self::NULL, self::PARENT], true);
     }
 
     public function isNullable(): bool

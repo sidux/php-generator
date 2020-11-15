@@ -9,14 +9,10 @@ use PHPUnit\Framework\AssertionFailedError;
 
 class Assert extends BaseAssert
 {
-    /**
-     * @param string|null $expectedThrowableClass
-     * @param string|int|null $expectedCode
-     * @param string|null $expectedMessage
-     */
+
     public static function assertThrowable(
         callable $test,
-        ?string $expectedThrowableClass = \Throwable::class,
+        string $expectedThrowableClass = \Throwable::class,
         ?string $expectedMessage = null,
         $expectedCode = null
     ): ?\Throwable {
@@ -41,7 +37,7 @@ class Assert extends BaseAssert
 
     private static function fixThrowableClass(?string $throwableClass, string $defaultClass = \Throwable::class): string
     {
-        if ($throwableClass === null) {
+        if (null === $throwableClass) {
             $throwableClass = $defaultClass;
         } else {
             try {

@@ -27,7 +27,6 @@ final class PhpStruct implements NamespaceAware, PhpElement
     use Part\FinalAwareTrait;
     use Part\AbstractAwareTrait;
     use Helper\Traits\MethodOverloadAwareTrait;
-    use Helper\Traits\StaticCreateAwareTrait;
 
     public const TYPES = [
         PhpStruct::TYPE_CLASS,
@@ -152,18 +151,18 @@ final class PhpStruct implements NamespaceAware, PhpElement
         if (!$classes) {
             throw new \InvalidArgumentException("No class found in file $fileName");
         }
-        if (count($classes) > 1) {
+        if (\count($classes) > 1) {
             throw new \InvalidArgumentException("Multiple classes found in file $fileName");
         }
 
-        return static::fromReflectionClass($classes[0]);
+        return self::fromReflectionClass($classes[0]);
     }
 
     public static function fromObject(object $object): self
     {
         $from = ReflectionClass::createFromInstance($object);
 
-        return static::fromReflectionClass($from);
+        return self::fromReflectionClass($from);
     }
 
     public static function fromReflectionClass(ReflectionClass $from): self
@@ -176,9 +175,9 @@ final class PhpStruct implements NamespaceAware, PhpElement
         $class->setComment($from->getDocComment());
 
         if ($from->isTrait()) {
-            $class->setType(static::TYPE_TRAIT);
+            $class->setType(self::TYPE_TRAIT);
         } elseif ($from->isInterface()) {
-            $class->setType(static::TYPE_INTERFACE);
+            $class->setType(self::TYPE_INTERFACE);
         } else {
             $class->setType($class::TYPE_CLASS);
         }
@@ -198,8 +197,9 @@ final class PhpStruct implements NamespaceAware, PhpElement
 
         $class->setImplements(array_keys($interfaces));
 
-        if ($from->getParentClass()) {
-            $class->setExtends([$from->getParentClass() ? $from->getParentClass()->getName() : null]);
+        $parent = $from->getParentClass();
+        if ($parent) {
+            $class->setExtends([$parent->getName()]);
         }
 
         $props = [];
@@ -222,14 +222,14 @@ final class PhpStruct implements NamespaceAware, PhpElement
 
     public static function fromReflectionObject(ReflectionObject $from): self
     {
-        return static::fromReflectionClass($from);
+        return self::fromReflectionClass($from);
     }
 
     public static function fromString(string $className): self
     {
         $from = ReflectionClass::createFromName($className);
 
-        return static::fromReflectionClass($from);
+        return self::fromReflectionClass($from);
     }
 
     public function hasMethod(string $name): bool
@@ -442,7 +442,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     {
         $this->consts = [];
         foreach ($consts as $key => $value) {
-            if (is_string($key)) {
+            if (\is_string($key)) {
                 $this->addConstant($key, $value);
             } else {
                 $this->addConstant($value);
@@ -517,7 +517,18 @@ final class PhpStruct implements NamespaceAware, PhpElement
                ->setTypes($property->getTypes())
         ;
         $method->addBody("\$this->$propertyName = $propertyName;");
-        $method->addBody("return \$this;");
+        $method->addBody('return $this;');
+        $method->addType(PhpType::SELF);
+
+        return $this->addMethod($method);
+    }
+
+    public function addStaticConstructor(string $name = 'create'): PhpMethod
+    {
+        $method = new PhpMethod($name);
+        $method->setVisibility(self::VISIBILITY_PUBLIC);
+        $method->setStatic();
+        $method->addBody('return new self();');
         $method->addType(PhpType::SELF);
 
         return $this->addMethod($method);
@@ -607,19 +618,19 @@ final class PhpStruct implements NamespaceAware, PhpElement
     /**
      * @param string|NamespaceAware $name
      */
-    public function addUse($name, string $alias = null): PhpUse
+    public function addUse($name, ?string $alias = null): PhpNamespaceUse
     {
         if ($name instanceof NamespaceAware) {
             $name = $name->getQualifiedName();
         }
         $this->validateName($name);
         $name = ltrim($name, '\\');
-        if ($alias === null && $this->name === PhpHelper::extractNamespace($name)) {
+        if (null === $alias && $this->name === PhpHelper::extractNamespace($name)) {
             $alias = PhpHelper::extractShortName($name);
         }
-        if ($alias === null) {
+        if (null === $alias) {
             $path  = explode('\\', $name);
-            $count = null;
+            $count = 0;
             do {
                 if (empty($path)) {
                     $count++;

@@ -127,6 +127,8 @@ final class PhpStructTest extends TestCase
                    ->setStatic(true)
         ;
 
+        $class->addStaticConstructor();
+
         Assert::assertSame($p, $class->getProperty('sections'));
         Assert::assertTrue($class->hasProperty('sections'));
         Assert::assertFalse($class->hasProperty('unknown'));
@@ -185,7 +187,7 @@ final class PhpStructTest extends TestCase
 
 
         $methods = $class->getMethods();
-        Assert::assertCount(3, $methods);
+        Assert::assertCount(4, $methods);
         $class->setMethods(array_values($methods));
         Assert::assertSame($methods, $class->getMethods());
 

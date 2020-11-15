@@ -26,7 +26,7 @@ class PhpValue
 
     public function __toString(): string
     {
-        if (is_string($this->value) && $this->isLiteral()) {
+        if (\is_string($this->value) && $this->isLiteral()) {
             return (string)$this->value;
         }
 
@@ -50,6 +50,11 @@ class PhpValue
 
     public function isNull(): bool
     {
-        return ($this->value === null && $this->isLiteral()) || ($this->value === 'null' && !$this->isLiteral());
+        return (null === $this->value && $this->isLiteral()) || ('null' === $this->value && !$this->isLiteral());
+    }
+
+    public function getValue()
+    {
+        return $this->value;
     }
 }

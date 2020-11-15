@@ -37,6 +37,11 @@ abstract class Example extends ParentClass implements IExample, IOne
 
     public static array $sections = ['first' => true];
 
+    public static function create(): self
+    {
+        return new self();
+    }
+
     /**
      * Returns file handle.
      * @return resource
