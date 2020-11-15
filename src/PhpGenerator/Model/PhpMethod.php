@@ -154,9 +154,6 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
         return $this;
     }
 
-    /**
-     * @param string $name without $
-     */
     public function removeParameter(string $name): self
     {
         unset($this->parameters[$name]);
