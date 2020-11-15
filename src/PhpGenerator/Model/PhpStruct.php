@@ -512,10 +512,12 @@ final class PhpStruct implements NamespaceAware, PhpElement
         $property = $this->getProperty($propertyName);
         $method   = new PhpMethod($prefix . ucfirst($propertyName));
         $method->setVisibility(self::VISIBILITY_PUBLIC);
-        $method->addParameter($property->getName())
-               ->setValue($property->getValue())
-               ->setTypes($property->getTypes())
-        ;
+        $param = $method->addParameter($property->getName());
+        $param->setTypes($property->getTypes());
+        $value = $property->getValue();
+        if ($value) {
+            $param->setValue($property->getValue());
+        }
         $method->addBody("\$this->$propertyName = \$$propertyName;");
         $method->addBody('return $this;');
         $method->addType(PhpType::SELF);
