@@ -15,7 +15,7 @@ use Sidux\PhpGenerator\Model\Part;
 /**
  * @method static self from(ReflectionProperty|array|string $from)
  */
-final class PhpProperty implements ValueAware, PhpMember, PhpElement, TypeAware
+final class PhpProperty extends PhpMember implements ValueAware, PhpElement, TypeAware
 {
     use Helper\Traits\MethodOverloadAwareTrait;
     use Part\NameAwareTrait;
@@ -24,8 +24,6 @@ final class PhpProperty implements ValueAware, PhpMember, PhpElement, TypeAware
     use Part\ValueAwareTrait;
     use Part\TypeAwareTrait;
     use Part\StaticAwareTrait;
-
-    private ?PhpStruct $parent = null;
 
     public function __toString(): string
     {
@@ -97,15 +95,5 @@ final class PhpProperty implements ValueAware, PhpMember, PhpElement, TypeAware
         $ref = ReflectionProperty::createFromName($className, $propertyName);
 
         return self::fromReflectionProperty($ref);
-    }
-
-    public function getParent(): ?PhpStruct
-    {
-        return $this->parent;
-    }
-
-    public function setParent(?PhpStruct $parent): void
-    {
-        $this->parent = $parent;
     }
 }

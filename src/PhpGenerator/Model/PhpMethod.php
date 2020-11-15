@@ -16,7 +16,7 @@ use Sidux\PhpGenerator\Model\Part;
 /**
  * @method static self from(ReflectionMethod|ReflectionFunction|string|array $from)
  */
-final class PhpMethod implements PhpMember, PhpElement, TypeAware
+final class PhpMethod extends PhpMember implements PhpElement, TypeAware
 {
     use Part\AbstractAwareTrait;
     use Part\CommentAwareTrait;
@@ -36,8 +36,6 @@ final class PhpMethod implements PhpMember, PhpElement, TypeAware
     private array $parameters = [];
 
     private bool $variadic = false;
-
-    private ?PhpStruct $parent = null;
 
     public function __toString(): string
     {
@@ -147,16 +145,6 @@ final class PhpMethod implements PhpMember, PhpElement, TypeAware
         throw new  \InvalidArgumentException("Invalid method/function name $from");
     }
 
-    public function getParent(): ?PhpStruct
-    {
-        return $this->parent;
-    }
-
-    public function setParent(?PhpStruct $parent): void
-    {
-        $this->parent = $parent;
-    }
-
     public function validate(): self
     {
         if ($this->abstract && ($this->final || $this->visibility === PhpStruct::VISIBILITY_PRIVATE)) {
@@ -182,8 +170,9 @@ final class PhpMethod implements PhpMember, PhpElement, TypeAware
             return false;
         }
 
-        if ($this->getParent()) {
-            return $this->getParent()->getType() !== PhpStruct::TYPE_INTERFACE;
+        $parent = $this->getParent();
+        if ($parent) {
+            return $parent->getType() !== PhpStruct::TYPE_INTERFACE;
         }
 
         return true;

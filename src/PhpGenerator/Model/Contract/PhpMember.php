@@ -6,9 +6,17 @@ namespace Sidux\PhpGenerator\Model\Contract;
 
 use Sidux\PhpGenerator\Model\PhpStruct;
 
-interface PhpMember
+abstract class PhpMember
 {
-    public function getParent(): ?PhpStruct;
+    protected ?PhpStruct $parent = null;
 
-    public function setParent(?PhpStruct $parent);
+    public function getParent(): ?PhpStruct
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?PhpStruct $parent): void
+    {
+        $this->parent = $parent;
+    }
 }

@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Sidux\PhpGenerator\Model;
 
+use Sidux\PhpGenerator\Model\Contract\PhpMember;
 use Sidux\PhpGenerator\Model\Contract\ValueAware;
 use Sidux\PhpGenerator\Model\Part;
 
-class PhpConstant extends PhpQualifiedName implements ValueAware
+class PhpConstant extends PhpMember implements ValueAware
 {
+    use Part\NamespaceAwareTrait;
     use Part\VisibilityAwareTrait;
     use Part\CommentAwareTrait;
     use Part\ValueAwareTrait;

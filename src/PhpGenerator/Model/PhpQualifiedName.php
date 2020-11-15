@@ -8,13 +8,11 @@ use Sidux\PhpGenerator\Model\Contract\NamespaceAware;
 use Sidux\PhpGenerator\Model\Contract\PhpMember;
 use Sidux\PhpGenerator\Model\Part;
 
-class PhpQualifiedName implements NamespaceAware, PhpMember
+class PhpQualifiedName extends PhpMember implements NamespaceAware
 {
     use Part\NamespaceAwareTrait;
 
     protected ?string $alias;
-
-    protected ?PhpStruct $parent = null;
 
     public function __construct(string $qualifiedName, ?string $alias = null)
     {
@@ -34,16 +32,6 @@ class PhpQualifiedName implements NamespaceAware, PhpMember
         $qualifiedName = $this->getParent() ? $this->qualifiedName : ltrim($this->qualifiedName, '\\');
 
         return $this->alias ?? ($this->isResolved() ? $this->name : $qualifiedName);
-    }
-
-    public function getParent(): ?PhpStruct
-    {
-        return $this->parent;
-    }
-
-    public function setParent(?PhpStruct $parent): void
-    {
-        $this->parent = $parent;
     }
 
     public function getAlias(): ?string
