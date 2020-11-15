@@ -14,7 +14,7 @@ trait NamespaceAwareTrait
 {
     use NameAwareTrait;
 
-    protected ?string $namespace = null;
+    protected string $namespace;
 
     protected string $qualifiedName;
 
@@ -25,7 +25,7 @@ trait NamespaceAwareTrait
 
     public function fromNamespaceAware(NamespaceAware $namespaceAware): self
     {
-        return new static($namespaceAware->getQualifiedName());
+        return new self($namespaceAware->getQualifiedName());
     }
 
     public function getNamespace(): string
@@ -35,7 +35,7 @@ trait NamespaceAwareTrait
 
     public function hasNamespace(): bool
     {
-        return $this->namespace && $this->namespace !== '\\';
+        return $this->namespace && '\\' !== $this->namespace;
     }
 
     public function getQualifiedName(): string

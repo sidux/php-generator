@@ -50,7 +50,11 @@ final class PhpStructTest extends TestCase
         $res[] = PhpStruct::from(Interface2::class);
         $res[] = PhpStruct::from(Class1::class);
 //        $res[]      = PhpStruct::from(new Class2());
-        $obj        = new Class3();
+        $obj = new Class3();
+        /**
+         * @noinspection PhpUndefinedFieldInspection
+         * @phpstan-ignore-next-line
+         */
         $obj->prop2 = 1;
         $res[]      = PhpStruct::from(ReflectionObject::createFromInstance($obj));
         $res[]      = PhpStruct::from(Class4::class);
@@ -387,7 +391,10 @@ final class PhpStructTest extends TestCase
     {
         Assert::assertError(
             static function () {
-                /** @noinspection PhpParamsInspection */
+                /**
+                 * @noinspection PhpParamsInspection
+                 * @phpstan-ignore-next-line
+                 */
                 (new PhpStruct('Example'))
                     ->addMember(new \stdClass());
             },

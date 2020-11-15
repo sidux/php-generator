@@ -34,20 +34,20 @@ final class VarDumper
             return ltrim(StringHelper::indent(trim((string)$var), $level), "\t ");
         }
 
-        if ($var === null) {
+        if (null === $var) {
             return 'null';
         }
 
         if (\is_string($var)) {
-            return static::dumpString($var);
+            return self::dumpString($var);
         }
 
         if (\is_array($var)) {
-            return static::dumpArray($var, $parents, $level, $column);
+            return self::dumpArray($var, $parents, $level, $column);
         }
 
         if (\is_object($var)) {
-            return static::dumpObject($var, $parents, $level);
+            return self::dumpObject($var, $parents, $level);
         }
 
         if (\is_resource($var)) {
@@ -61,9 +61,9 @@ final class VarDumper
     {
         if (preg_match('#[^\x09\x20-\x7E\xA0-\x{10FFFF}]#u', $var) || preg_last_error()) {
             static $table;
-            if ($table === null) {
+            if (null === $table) {
                 foreach (array_merge(range("\x00", "\x1F"), range("\x7F", "\xFF")) as $ch) {
-                    $table[$ch] = '\x' . str_pad(dechex(ord($ch)), 2, '0', STR_PAD_LEFT);
+                    $table[$ch] = '\x' . str_pad(dechex(\ord($ch)), 2, '0', STR_PAD_LEFT);
                 }
                 $table['\\'] = '\\\\';
                 $table["\r"] = '\r';
@@ -85,7 +85,7 @@ final class VarDumper
             return '[]';
         }
 
-        if ($level > static::$maxDepth || in_array($var, $parents ?? [], true)) {
+        if ($level > self::$maxDepth || \in_array($var, $parents, true)) {
             throw new \InvalidArgumentException('Nesting level too deep or recursive dependency.');
         }
 
@@ -96,18 +96,19 @@ final class VarDumper
         $counter    = 0;
 
         foreach ($var as $k => &$v) {
-            $keyPart    = $k === $counter ? '' : static::dumpVar($k) . ' => ';
+            $keyPart    = $k === $counter ? '' : self::dumpVar($k) . ' => ';
             $counter    = \is_int($k) ? max($k + 1, $counter) : $counter;
-            $outInline  .= ($outInline === '' ? '' : ', ') . $keyPart;
-            $outInline  .= static::dumpVar($v, $parents, 0, $column + strlen($outInline));
+            $outInline  .= ('' === $outInline ? '' : ', ') . $keyPart;
+            $outInline  .= self::dumpVar($v, $parents, 0, $column + \strlen($outInline));
             $outWrapped .= '    '
                 . $keyPart
-                . static::dumpVar($v, $parents, $level + 1, strlen($keyPart))
+                . self::dumpVar($v, $parents, $level + 1, \strlen($keyPart))
                 . ",\n$space";
         }
+        unset($v);
 
         array_pop($parents);
-        $wrap = strpos($outInline, "\n") !== false || $level * self::INDENT_LENGTH + $column + strlen($outInline) + 3 > static::$wrapLength;
+        $wrap = false !== strpos($outInline, "\n") || $level * self::INDENT_LENGTH + $column + \strlen($outInline) + 3 > self::$wrapLength;
 
         return '[' . ($wrap ? $outWrapped : $outInline) . ']';
     }
@@ -115,50 +116,54 @@ final class VarDumper
     private static function dumpObject($var, array $parents, int $level): string
     {
         if ($var instanceof Serializable) {
-            return 'unserialize(' . static::dumpString(serialize($var)) . ')';
+            return 'unserialize(' . self::dumpString(serialize($var)) . ')';
         }
 
         if ($var instanceof Closure) {
             throw new \InvalidArgumentException('Cannot dump closure.');
         }
 
-        $class = get_class($var);
+        $class = \get_class($var);
         if ((new ReflectionObject($var))->isAnonymous()) {
             throw new \InvalidArgumentException('Cannot dump anonymous class.');
         }
 
-        if (in_array($class, ['DateTime', 'DateTimeImmutable'], true)) {
+        if (\in_array($class, ['DateTime', 'DateTimeImmutable'], true)) {
             return "new $class('{$var->format('Y-m-d H:i:s.u')}', new DateTimeZone('{$var->getTimeZone()->getName()}'))";
         }
 
         $arr   = (array)$var;
         $space = str_repeat('    ', $level);
 
-        if ($level > static::$maxDepth || in_array($var, $parents ?? [], true)) {
+        if ($level > self::$maxDepth || \in_array($var, $parents, true)) {
             throw new \InvalidArgumentException('Nesting level too deep or recursive dependency.');
         }
 
         $out       = "\n";
         $parents[] = $var;
         if (method_exists($var, '__sleep')) {
+            $props = [];
             foreach ($var->__sleep() as $v) {
-                $props[$v] = $props["\x00*\x00$v"] = $props["\x00$class\x00$v"] = true;
+                $props["\x00$class\x00$v"] = true;
+                $props["\x00*\x00$v"]      = true;
+                $props[$v]                 = true;
             }
         }
 
         foreach ($arr as $k => &$v) {
             if (!isset($props) || isset($props[$k])) {
                 $out .= "$space    "
-                    . ($keyPart = static::dumpVar($k) . ' => ')
-                    . static::dumpVar($v, $parents, $level + 1, strlen($keyPart))
+                    . ($keyPart = self::dumpVar($k) . ' => ')
+                    . self::dumpVar($v, $parents, $level + 1, \strlen($keyPart))
                     . ",\n";
             }
         }
+        unset($v);
 
         array_pop($parents);
         $out .= $space;
 
-        return $class === 'stdClass'
+        return \stdClass::class === $class
             ? "(object) [$out]"
             : __CLASS__ . "::createObject('$class', [$out])";
     }

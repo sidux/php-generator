@@ -6,14 +6,16 @@ namespace Sidux\PhpGenerator\Model;
 
 use Roave\BetterReflection\Reflection\ReflectionProperty;
 use Sidux\PhpGenerator\Helper;
+use Sidux\PhpGenerator\Model\Contract\PhpElement;
 use Sidux\PhpGenerator\Model\Contract\PhpMember;
+use Sidux\PhpGenerator\Model\Contract\TypeAware;
 use Sidux\PhpGenerator\Model\Contract\ValueAware;
 use Sidux\PhpGenerator\Model\Part;
 
 /**
  * @method static self from(ReflectionProperty|array|string $from)
  */
-final class PhpProperty implements ValueAware, PhpMember
+final class PhpProperty implements ValueAware, PhpMember, PhpElement, TypeAware
 {
     use Helper\Traits\MethodOverloadAwareTrait;
     use Part\NameAwareTrait;
@@ -22,7 +24,8 @@ final class PhpProperty implements ValueAware, PhpMember
     use Part\ValueAwareTrait;
     use Part\TypeAwareTrait;
     use Part\StaticAwareTrait;
-    use Part\ParentAwareTrait;
+
+    private ?PhpStruct $parent = null;
 
     public function __toString(): string
     {
@@ -46,9 +49,27 @@ final class PhpProperty implements ValueAware, PhpMember
         return self::fromReflectionProperty($ref);
     }
 
+    public static function fromPrototype(string $property): PhpProperty
+    {
+        preg_match('/(?:([\w|\\\\\[\]]+) )?\$?(\w+)(?:\s*=\s*(.+))?/', $property, $parts);
+
+        $type  = trim($parts[1]) ?: '';
+        $name  = trim($parts[2]);
+        $value = $parts[3] ?? null;
+
+        $propertyObj = new self($name);
+        $propertyObj->setTypes(explode('|', $type));
+
+        if (null !== $value) {
+            $propertyObj->setValue(new PhpValue($value));
+        }
+
+        return $propertyObj;
+    }
+
     public static function fromReflectionProperty(ReflectionProperty $ref): self
     {
-        $prop = new static($ref->getName());
+        $prop = new self($ref->getName());
         if ($ref->getAst()->props[0]->default) {
             $prop->setValue($ref->getDefaultValue());
         }
@@ -78,21 +99,13 @@ final class PhpProperty implements ValueAware, PhpMember
         return self::fromReflectionProperty($ref);
     }
 
-    public static function fromPrototype(string $property): PhpProperty
+    public function getParent(): ?PhpStruct
     {
-        preg_match('/(?:([\w|\\\\\[\]]+) )?\$?(\w+)(?:\s*=\s*(.+))?/', $property, $parts);
+        return $this->parent;
+    }
 
-        $type = trim($parts[1]) ?: null;
-        $name = trim($parts[2]);
-        $value = $parts[3] ?? null;
-
-        $property = new PhpProperty($name);
-        $property->setTypes(explode('|', $type));
-
-        if (null !== $value) {
-            $property->setValue(new PhpValue($value));
-        }
-
-        return $property;
+    public function setParent(?PhpStruct $parent): void
+    {
+        $this->parent = $parent;
     }
 }

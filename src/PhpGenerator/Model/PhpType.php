@@ -8,9 +8,11 @@ use Roave\BetterReflection\Reflection\ReflectionType;
 use Sidux\PhpGenerator\Helper;
 use Sidux\PhpGenerator\Helper\PhpHelper;
 use Sidux\PhpGenerator\Model\Contract\NamespaceAware;
+use Sidux\PhpGenerator\Model\Contract\PhpElement;
+use Sidux\PhpGenerator\Model\Contract\TypeAware;
 use Sidux\PhpGenerator\Model\Part;
 
-class PhpType
+class PhpType implements PhpElement
 {
     use Part\ParentAwareTrait;
     use Helper\Traits\StaticCreateAwareTrait;
@@ -45,48 +47,73 @@ class PhpType
         SELF = 'self',
         PARENT = 'parent';
 
-    /**
-     * @var PhpName|string
-     */
-    private $value;
-
     private bool $internal = false;
 
     private bool $collection = false;
 
     private bool $nullable = false;
 
+    private ?TypeAware $parent = null;
+
     /**
-     * @param string|NamespaceAware|PhpName
+     * @param string|NamespaceAware $type
      */
     public function __construct($type)
     {
         if ($type instanceof NamespaceAware) {
             $type = $type->getQualifiedName();
         }
-        if (strpos($type, '?') === 0) {
+
+        $type = (string)$type;
+        if (0 === strncmp($type, '?', 1)) {
             $this->nullable = true;
             $type           = str_replace('?', '', $type);
         }
         if (!PhpHelper::isNamespaceIdentifier($type)) {
             throw new \InvalidArgumentException("Value '$type' is not a valid type.");
         }
-        if (substr($type, -2, 2) === '[]') {
+        if ('[]' === substr($type, -2, 2)) {
             $this->collection = true;
+            $type             = str_replace('[]', '', $type);
         }
-        if (in_array($type, self::INTERNAL_TYPES, true)) {
+        if (\in_array($type, self::INTERNAL_TYPES, true)) {
             $this->internal = true;
-        } else {
-            $type = new PhpName($type);
-            $type->setParent($this);
+        }
+        $this->setQualifiedName($type);
+    }
+
+    public function getStructParent(): ?PhpStruct
+    {
+        $parent = $this->getParent();
+        while ($parent
+            && method_exists($parent, 'getParent')) {
+            $parent = $parent->getParent();
         }
 
-        $this->value = $type;
+        if (!$parent) {
+            return null;
+        }
+
+        if (!$parent instanceof PhpStruct) {
+            return null;
+        }
+
+        return $parent;
     }
 
     public function __toString(): string
     {
-        return (string)$this->value;
+        $qualifiedName = $this->getQualifiedName();
+        if ($this->getStructParent() && !$this->isInternal()) {
+            $qualifiedName = '\\' . $qualifiedName;
+        }
+
+        return $this->isResolved() ? $this->name : $qualifiedName;
+    }
+
+    public static function create(...$args): self
+    {
+        return new self(...$args);
     }
 
     public static function fromReflectionType(ReflectionType $ref): self
@@ -136,6 +163,34 @@ class PhpType
         return null;
     }
 
+    public function isResolved(): bool
+    {
+        $parent = $this->getStructParent();
+        if (!$parent) {
+            return false;
+        }
+
+        if (substr_count($this->getQualifiedName(), '\\') < 2) {
+            return false;
+        }
+
+        if ($parent->getNamespace() === $this->getNamespace()) {
+            return true;
+        }
+
+        return $parent->hasResolveTypes();
+    }
+
+    public function getParent(): ?TypeAware
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?TypeAware $parent): void
+    {
+        $this->parent = $parent;
+    }
+
     public function isCollection(): bool
     {
         return $this->collection;
@@ -155,13 +210,9 @@ class PhpType
     {
         return $this->nullable;
     }
-    
-    public function getQualifiedName()
+
+    public function getName(): string
     {
-        if ($this->value instanceof PhpName) {
-            return $this->value->getQualifiedName();
-        }
-        
-        return $this->value;
+        return $this->__toString();
     }
 }

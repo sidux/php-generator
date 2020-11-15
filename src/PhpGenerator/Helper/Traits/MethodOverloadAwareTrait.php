@@ -27,8 +27,8 @@ trait MethodOverloadAwareTrait
     {
         $types = [];
         foreach ($args as $i => $arg) {
-            $type = gettype($arg);
-            if ($type === 'object') {
+            $type = \gettype($arg);
+            if ('object' === $type) {
                 $class       = ReflectionClass::createFromInstance($arg);
                 $types[$i][] = $class->getShortName();
                 $types[$i]   = array_merge(
@@ -41,10 +41,10 @@ trait MethodOverloadAwareTrait
             $types[$i]   = array_map([PhpHelper::class, 'extractShortName'], $types[$i]);
         }
 
-        $argsNumber = count($args);
+        $argsNumber    = \count($args);
 
         $possibleMethods = [];
-        $getMethodName   = static function ($nameParts = [], $index = 0) use (
+        $getMethodName = static function (array $nameParts = [], int $index = 0) use (
             $types,
             $argsNumber,
             $baseName,
@@ -56,7 +56,7 @@ trait MethodOverloadAwareTrait
             }
             foreach ($types[$index] as $type) {
                 $nameParts[$index] = $type;
-                if (count($nameParts) === $argsNumber) {
+                if (\count($nameParts) === $argsNumber) {
                     $methodName        = self::buildMethodName($baseName, $nameParts);
                     $possibleMethods[] = $methodName;
                     unset($nameParts[$index]);
@@ -83,7 +83,7 @@ trait MethodOverloadAwareTrait
 
     protected static function buildMethodName(string $baseName, array $types): ?string
     {
-        $prefix = strtolower(substr($baseName, -4, 4)) === 'from' ? '' : 'From';
+        $prefix = 'from' === strtolower(substr($baseName, -4, 4)) ? '' : 'From';
 
         return $baseName . $prefix . implode('And', array_map('ucfirst', $types));
     }

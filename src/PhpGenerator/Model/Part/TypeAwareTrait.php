@@ -7,12 +7,11 @@ namespace Sidux\PhpGenerator\Model\Part;
 use phpDocumentor\Reflection\Type;
 use Roave\BetterReflection\Reflection\ReflectionType;
 use Sidux\PhpGenerator\Model\Contract\NamespaceAware;
-use Sidux\PhpGenerator\Model\PhpStruct;
+use Sidux\PhpGenerator\Model\Contract\TypeAware;
 use Sidux\PhpGenerator\Model\PhpType;
 
 /**
  * @internal
- * @method self addType(NamespaceAware|PhpType|string $type)
  */
 trait TypeAwareTrait
 {
@@ -30,6 +29,9 @@ trait TypeAwareTrait
         return $this;
     }
 
+    /**
+     * @return array<string, PhpType>
+     */
     public function getDocTypes(): array
     {
         return $this->getTypes();
@@ -43,9 +45,9 @@ trait TypeAwareTrait
             unset($types[PhpType::NULL]);
         }
 
-        if (count($types) === 1) {
+        if (1 === \count($types)) {
             $type = reset($types);
-            if ($type && !$type->isCollection() && $type->isHintable()) {
+            if (!$type->isCollection() && $type->isHintable()) {
                 return $prefix . $type;
             }
         }
@@ -73,7 +75,7 @@ trait TypeAwareTrait
     }
 
     /**
-     * @param array<string, PhpType|string|PhpStruct> $types
+     * @param array<string|int, null|string|NamespaceAware|PhpType|ReflectionType|Type> $types
      */
     public function setTypes(array $types): self
     {
@@ -93,7 +95,7 @@ trait TypeAwareTrait
         return false;
     }
 
-    public function addTypeFromNamespaceAware(PhpStruct $stuct): self
+    public function addTypeFromNamespaceAware(NamespaceAware $stuct): self
     {
         $type = $stuct->getQualifiedName();
 
@@ -108,7 +110,9 @@ trait TypeAwareTrait
         if ($type->isNullable()) {
             $this->addType(PhpType::NULL);
         }
-        $type->setParent($this);
+        if ($this instanceof TypeAware) {
+            $type->setParent($this);
+        }
         $this->types[(string)$type] = $type;
 
         return $this;
@@ -123,6 +127,9 @@ trait TypeAwareTrait
 
     public function addTypeFromString(string $type): self
     {
+        if (!$type) {
+            return $this;
+        }
         $phpType = new PhpType($type);
 
         return $this->addTypeFromPhpType($phpType);
@@ -133,16 +140,13 @@ trait TypeAwareTrait
         return $this->addTypeFromString((string)$type);
     }
 
-    /**
-     * @param null $type
-     */
-    public function addTypeFromNull($type): self
+    public function addTypeFromNull(): self
     {
         return $this;
     }
 
     /**
-     * @param array<string, PhpType|PhpStruct|string> $types
+     * @param array<string|int, null|string|NamespaceAware|PhpType|ReflectionType|Type> $types
      */
     public function addTypes(array $types): self
     {
@@ -151,5 +155,38 @@ trait TypeAwareTrait
         }
 
         return $this;
+    }
+
+    /**
+     * @param null|string|NamespaceAware|PhpType|ReflectionType|Type $type
+     */
+    public function addType($type): self
+    {
+        if (null === $type) {
+            return $this;
+        }
+
+        if (\is_string($type)) {
+            return $this->addTypeFromString($type);
+        }
+
+        if ($type instanceof ReflectionType) {
+            return $this->addTypeFromReflectionType($type);
+        }
+
+        if ($type instanceof PhpType) {
+            return $this->addTypeFromPhpType($type);
+        }
+
+        if ($type instanceof Type) {
+            return $this->addTypeFromType($type);
+        }
+
+        if ($type instanceof NamespaceAware) {
+            return $this->addTypeFromNamespaceAware($type);
+        }
+
+        /* @phpstan-ignore-next-line */
+        throw new \RuntimeException('Unsupported type ' . \gettype($type));
     }
 }

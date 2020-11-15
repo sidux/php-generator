@@ -35,7 +35,7 @@ abstract class Example extends ParentClass implements IExample, IOne
 
     public ?array $typed2 = null;
 
-    public static $sections = ['first' => true];
+    public static array $sections = ['first' => true];
 
     /**
      * Returns file handle.

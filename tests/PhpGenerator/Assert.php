@@ -19,8 +19,8 @@ class Assert extends BaseAssert
         ?string $expectedThrowableClass = \Throwable::class,
         ?string $expectedMessage = null,
         $expectedCode = null
-    ): \Throwable {
-        $expectedThrowableClass = self::fixThrowableClass($expectedThrowableClass, \Throwable::class);
+    ): ?\Throwable {
+        $expectedThrowableClass = self::fixThrowableClass($expectedThrowableClass);
         try {
             $test();
         } catch (\Throwable $throwable) {
@@ -31,9 +31,12 @@ class Assert extends BaseAssert
             );
             self::checkThrowableCode($throwable, $expectedCode);
             self::checkThrowableMessage($throwable, $expectedMessage);
+
             return $throwable;
         }
         self::failAssertingThrowable($expectedThrowableClass);
+
+        return null;
     }
 
     private static function fixThrowableClass(?string $throwableClass, string $defaultClass = \Throwable::class): string
@@ -53,7 +56,7 @@ class Assert extends BaseAssert
                     )
                 );
             }
-            if (!$reflection->isInterface() && $throwableClass !== $defaultClass && !$reflection->isSubclassOf(
+            if ($throwableClass !== $defaultClass && !$reflection->isInterface() && !$reflection->isSubclassOf(
                     $defaultClass
                 )) {
                 static::fail(
@@ -72,15 +75,15 @@ class Assert extends BaseAssert
         $message = $throwable->getMessage();
         $code    = $throwable->getCode();
         $details = '';
-        if ($message !== '' && $code !== 0) {
+        if ('' !== $message && 0 !== $code) {
             $details = sprintf(
                 ' (code was %s, message was "%s")',
                 $code,
                 $message
             ); // code might be string also, e.g. in PDOException
-        } elseif ($message !== '') {
+        } elseif ('' !== $message) {
             $details = sprintf(' (message was "%s")', $message);
-        } elseif ($code !== 0) {
+        } elseif (0 !== $code) {
             $details = sprintf(' (code was %s)', $code);
         }
         $errorMessage = sprintf('Failed asserting the class of %s%s.', $expectedTypeCaption, $details);
@@ -92,10 +95,8 @@ class Assert extends BaseAssert
         switch ($throwableClass) {
             case \Exception::class:
                 return 'an Exception';
-                break;
             case \Error::class:
                 return 'an Error';
-                break;
             case \Throwable::class:
                 return 'a Throwable';
             default:
@@ -109,22 +110,22 @@ class Assert extends BaseAssert
      */
     private static function checkThrowableCode(\Throwable $throwable, $expectedCode): void
     {
-        if ($expectedCode !== null) {
+        if (null !== $expectedCode) {
             static::assertEquals(
                 $expectedCode,
                 $throwable->getCode(),
-                sprintf('Failed asserting the code of thrown %s.', get_class($throwable))
+                sprintf('Failed asserting the code of thrown %s.', \get_class($throwable))
             );
         }
     }
 
     private static function checkThrowableMessage(\Throwable $throwable, string $expectedMessage = null): void
     {
-        if ($expectedMessage !== null) {
+        if (null !== $expectedMessage) {
             static::assertStringContainsString(
                 $throwable->getMessage(),
                 $expectedMessage,
-                sprintf('Failed asserting the message of thrown %s.', get_class($throwable))
+                sprintf('Failed asserting the message of thrown %s.', \get_class($throwable))
             );
         }
     }
@@ -141,21 +142,13 @@ class Assert extends BaseAssert
         );
     }
 
-    /**
-     * @param callable $test
-     * @param string|null $expectedExceptionClass
-     * @param string|int|null $expectedCode
-     * @param string|null $expectedMessage
-     *
-     * @return \Exception
-     */
     public static function assertException(
         callable $test,
-        ?string $expectedExceptionClass = \Exception::class,
+        string $expectedExceptionClass = \Exception::class,
         ?string $expectedMessage = null,
         $expectedCode = null
-    ): \Exception {
-        $expectedExceptionClass = self::fixThrowableClass($expectedExceptionClass, \Exception::class);
+    ): ?\Exception {
+        $expectedExceptionClass = self::fixThrowableClass($expectedExceptionClass);
         try {
             $test();
         } catch (\Exception $exception) {
@@ -166,31 +159,33 @@ class Assert extends BaseAssert
             );
             self::checkThrowableCode($exception, $expectedCode);
             self::checkThrowableMessage($exception, $expectedMessage);
+
             return $exception;
         }
         self::failAssertingThrowable($expectedExceptionClass);
+
+        return null;
     }
 
-    /**
-     * @param string|null $expectedErrorClass
-     * @param string|int|null $expectedCode
-     * @param string|null $expectedMessage
-     */
+
     public static function assertError(
         callable $test,
-        ?string $expectedErrorClass = \Error::class,
+        string $expectedErrorClass = \Error::class,
         ?string $expectedMessage = null,
         $expectedCode = null
-    ): \Error {
-        $expectedErrorClass = self::fixThrowableClass($expectedErrorClass, \Error::class);
+    ): ?\Error {
+        $expectedErrorClass = self::fixThrowableClass($expectedErrorClass);
         try {
             $test();
         } catch (\Error $error) {
             self::checkThrowableInstanceOf($error, $expectedErrorClass, self::resolveThrowableCaption(\Error::class));
             self::checkThrowableCode($error, $expectedCode);
             self::checkThrowableMessage($error, $expectedMessage);
+
             return $error;
         }
         self::failAssertingThrowable($expectedErrorClass);
+
+        return null;
     }
 }

@@ -16,7 +16,7 @@ trait StaticAwareTrait
         return $this->static;
     }
 
-    public function setStatic(bool $static): self
+    public function setStatic(bool $static = true): self
     {
         $this->static = $static;
 

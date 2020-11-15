@@ -13,13 +13,14 @@ use Sidux\PhpGenerator\Helper;
 use Sidux\PhpGenerator\Helper\PhpHelper;
 use Sidux\PhpGenerator\Helper\StringHelper;
 use Sidux\PhpGenerator\Model\Contract\NamespaceAware;
+use Sidux\PhpGenerator\Model\Contract\PhpElement;
 use Sidux\PhpGenerator\Model\Contract\PhpMember;
 use Sidux\PhpGenerator\Model\Part;
 
 /**
  * @method static self from(ReflectionClass|ReflectionObject|string|object $from)
  */
-final class PhpStruct implements NamespaceAware
+final class PhpStruct implements NamespaceAware, PhpElement
 {
     use Part\CommentAwareTrait;
     use Part\NamespaceAwareTrait;
@@ -56,12 +57,12 @@ final class PhpStruct implements NamespaceAware
     private array $consts = [];
 
     /**
-     * @var array<string, PhpName>
+     * @var array<string, PhpQualifiedName>
      */
     private array $extends = [];
 
     /**
-     * @var array<string, PhpName>
+     * @var array<string, PhpQualifiedName>
      */
     private array $implements = [];
 
@@ -90,7 +91,7 @@ final class PhpStruct implements NamespaceAware
     private string $type = self::TYPE_CLASS;
 
     /**
-     * @var array<string, PhpUse>
+     * @var array<string, PhpNamespaceUse>
      */
     private array $uses = [];
 
@@ -136,6 +137,11 @@ final class PhpStruct implements NamespaceAware
         $output  .= "}\n";
 
         return $output;
+    }
+
+    public static function create(...$args): self
+    {
+        return new self(...$args);
     }
 
     public static function fromFile(string $fileName): self
@@ -276,7 +282,7 @@ final class PhpStruct implements NamespaceAware
     }
 
     /**
-     * @return array<string, PhpName>
+     * @return array<string, PhpQualifiedName>
      */
     public function getExtends(): array
     {
@@ -296,7 +302,7 @@ final class PhpStruct implements NamespaceAware
     }
 
     /**
-     * @return array<string, PhpName>
+     * @return array<string, PhpQualifiedName>
      */
     public function getImplements(): array
     {
@@ -422,7 +428,7 @@ final class PhpStruct implements NamespaceAware
     }
 
     /**
-     * @return array<string, PhpUse>
+     * @return array<string, PhpNamespaceUse>
      */
     public function getUses(): array
     {
@@ -477,13 +483,13 @@ final class PhpStruct implements NamespaceAware
     /**
      * @param string|NamespaceAware $name
      */
-    public function addExtend($name): PhpName
+    public function addExtend($name): PhpQualifiedName
     {
         if ($name instanceof NamespaceAware) {
             $name = $name->getQualifiedName();
         }
         $this->validateName($name);
-        $this->extends[$name] = new PhpName($name);
+        $this->extends[$name] = new PhpQualifiedName($name);
         $this->extends[$name]->setParent($this);
 
         return $this->extends[$name];
@@ -520,13 +526,13 @@ final class PhpStruct implements NamespaceAware
     /**
      * @param string|NamespaceAware $name
      */
-    public function addImplement($name): PhpName
+    public function addImplement($name): PhpQualifiedName
     {
         if ($name instanceof NamespaceAware) {
             $name = $name->getQualifiedName();
         }
         $this->validateName($name);
-        $this->implements[$name] = new PhpName($name);
+        $this->implements[$name] = new PhpQualifiedName($name);
         $this->implements[$name]->setParent($this);
 
         return $this->implements[$name];
@@ -618,18 +624,18 @@ final class PhpStruct implements NamespaceAware
                 if (empty($path)) {
                     $count++;
                 } else {
-                    $alias = array_pop($path) . $alias;
+                    $alias = array_pop($path) . (string)$alias;
                 }
                 $index = $alias . $count;
-            } while (isset($this->uses[$index]) && $this->uses[$index] !== $name);
+            } while (isset($this->uses[$index]) && (string)$this->uses[$index] !== $name);
             $alias .= $count;
-        } elseif (isset($this->uses[$alias]) && $this->uses[$alias] !== $name) {
+        } elseif (isset($this->uses[$alias]) && (string)$this->uses[$alias] !== $name) {
             throw new \DomainException(
                 "Alias '$alias' used already for '{$this->uses[$alias]}', cannot use for '{$name}'."
             );
         }
 
-        $this->uses[$alias] = new PhpUse($name, $alias);
+        $this->uses[$alias] = new PhpNamespaceUse($name, $alias);
         $this->uses[$alias]->setParent($this);
         asort($this->uses);
 

@@ -19,7 +19,7 @@ class PhpPropertyTest extends TestCase
 
         Assert::assertError(
             static function () {
-                new PhpProperty(null);
+                new PhpProperty(null); // @phpstan-ignore-line
             },
             \TypeError::class
         );

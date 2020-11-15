@@ -5,29 +5,44 @@ declare(strict_types=1);
 namespace Sidux\PhpGenerator\Model;
 
 use Roave\BetterReflection\Reflection\ReflectionParameter;
+use Sidux\PhpGenerator\Helper;
+use Sidux\PhpGenerator\Model\Contract\PhpElement;
+use Sidux\PhpGenerator\Model\Contract\TypeAware;
 use Sidux\PhpGenerator\Model\Contract\ValueAware;
 use Sidux\PhpGenerator\Model\Part;
-use Sidux\PhpGenerator\Helper;
 
 
 /**
  * @method static self from(ReflectionParameter|string|array $from)
- * @method null|PhpMethod getParent()
- * @method self setParent(null|PhpMethod $method)
  */
-final class PhpParameter implements ValueAware
+final class PhpParameter implements ValueAware, PhpElement, TypeAware
 {
     use Part\NameAwareTrait;
     use Part\ValueAwareTrait;
     use Part\TypeAwareTrait;
-    use Part\ParentAwareTrait;
     use Part\ReferenceAwareTrait;
-    use Helper\Traits\StaticCreateAwareTrait;
     use Helper\Traits\MethodOverloadAwareTrait;
+
+    private ?PhpMethod $parent = null;
 
     public function __construct(string $name)
     {
         $this->setName($name);
+    }
+
+    public function getParent(): ?PhpMethod
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?PhpMethod $parent): void
+    {
+        $this->parent = $parent;
+    }
+
+    public static function create(...$args): self
+    {
+        return new self(...$args);
     }
 
     public function __toString(): string
@@ -47,12 +62,12 @@ final class PhpParameter implements ValueAware
         [$classInstance, $methodName, $parameterName] = $from;
         $ref = ReflectionParameter::createFromClassInstanceAndMethod($classInstance, $methodName, $parameterName);
 
-        return static::fromReflectionParameter($ref);
+        return self::fromReflectionParameter($ref);
     }
 
     public static function fromReflectionParameter(ReflectionParameter $ref): self
     {
-        $param = new static($ref->getName());
+        $param = new self($ref->getName());
         $param->setReference($ref->isPassedByReference());
         $param->addType($ref->getType());
         $param->addTypes($ref->getDocBlockTypes());
@@ -69,7 +84,7 @@ final class PhpParameter implements ValueAware
         [$className, $methodName, $parameterName] = explode('::', $from);
         $ref = ReflectionParameter::createFromClassNameAndMethod($className, $methodName, $parameterName);
 
-        return static::fromReflectionParameter($ref);
+        return self::fromReflectionParameter($ref);
     }
 
     public function isVariadic(): bool

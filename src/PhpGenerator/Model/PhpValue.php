@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Sidux\PhpGenerator\Model;
 
 use Sidux\PhpGenerator\Helper\VarDumper;
+use Sidux\PhpGenerator\Model\Contract\ValueAware;
 
 class PhpValue
 {
     private $value;
 
     private bool $literal;
+
+    private ?ValueAware $parent = null;
 
     /**
      * @param mixed $value
@@ -28,6 +31,16 @@ class PhpValue
         }
 
         return VarDumper::dump($this->value);
+    }
+
+    public function getParent(): ?ValueAware
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?ValueAware $parent): void
+    {
+        $this->parent = $parent;
     }
 
     public function isLiteral(): bool

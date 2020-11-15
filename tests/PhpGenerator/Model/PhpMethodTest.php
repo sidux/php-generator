@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sidux\PhpGenerator\Model;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Reflection\ReflectionClass;
 use Roave\BetterReflection\Reflection\ReflectionFunction;
 use Roave\BetterReflection\Reflection\ReflectionMethod;
 use Sidux\PhpGenerator\Assert;
@@ -24,9 +23,9 @@ final class PhpMethodTest extends TestCase
      */
     public function from(): void
     {
-        $res = PhpMethod::from(ReflectionMethod::createFromName(ReflectionClass::class, 'getName'));
+        $res = PhpMethod::from(ReflectionMethod::createFromName(self::class, 'from'));
         Assert::assertInstanceOf(PhpMethod::class, $res);
-        Assert::assertSame('getName', $res->getName());
+        Assert::assertSame('from', $res->getName());
 
         $res = PhpMethod::from(ReflectionFunction::createFromName('trim'));
         Assert::assertInstanceOf(PhpMethod::class, $res);
@@ -84,7 +83,7 @@ final class PhpMethodTest extends TestCase
 
         Assert::assertError(
             static function () {
-                new PhpMethod(null);
+                new PhpMethod(null); // @phpstan-ignore-line
             },
             \TypeError::class
         );
@@ -99,13 +98,6 @@ final class PhpMethodTest extends TestCase
         Assert::assertException(
             static function () {
                 new PhpMethod('*');
-            },
-            \InvalidArgumentException::class
-        );
-
-        Assert::assertException(
-            static function () {
-                PhpMethod::from('');
             },
             \InvalidArgumentException::class
         );
@@ -195,7 +187,7 @@ final class PhpMethodTest extends TestCase
         $method->addParameter('baz')->setValue([]);
 
         Assert::assertSame(
-            'function variadic($foo, $bar, ...$baz)
+            'function variadic($foo, $bar, array ...$baz)
 {
     return 42;
 }

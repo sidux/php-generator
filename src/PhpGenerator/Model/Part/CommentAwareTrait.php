@@ -34,7 +34,7 @@ trait CommentAwareTrait
         }
 
         $value    = ltrim(preg_replace("#/\*\*\n?|\*/#", '', $value), '* ');
-        $comments = preg_split("/ \* ?/", $value);
+        $comments = preg_split('/ \* ?/', $value);
 
         foreach ($comments as $comment) {
             $this->addComment(trim($comment));

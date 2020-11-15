@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Sidux\PhpGenerator\Model;
 
-class PhpTraitUse extends PhpName
+use Sidux\PhpGenerator\Model\Contract\PhpElement;
+
+class PhpTraitUse extends PhpQualifiedName implements PhpElement
 {
     private array $resolutions = [];
 
     public function __toString(): string
     {
-        $output   = '';
-        $output   .= 'use ' . parent::__toString();
-        $output   .= ($this->resolutions ? " {\n    " . implode(";\n   ", $this->resolutions) . ";\n}\n" : ";\n");
+        $output = '';
+        $output .= 'use ' . parent::__toString();
+        $output .= ($this->resolutions ? " {\n    " . implode(";\n   ", $this->resolutions) . ";\n}\n" : ";\n");
 
         return $output;
     }

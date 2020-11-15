@@ -8,13 +8,15 @@ use Roave\BetterReflection\Reflection\ReflectionFunction;
 use Roave\BetterReflection\Reflection\ReflectionMethod;
 use Sidux\PhpGenerator\Helper;
 use Sidux\PhpGenerator\Helper\StringHelper;
+use Sidux\PhpGenerator\Model\Contract\PhpElement;
 use Sidux\PhpGenerator\Model\Contract\PhpMember;
+use Sidux\PhpGenerator\Model\Contract\TypeAware;
 use Sidux\PhpGenerator\Model\Part;
 
 /**
- * @method static self from(ReflectionMethod|string|array $from)
+ * @method static self from(ReflectionMethod|ReflectionFunction|string|array $from)
  */
-final class PhpMethod implements PhpMember
+final class PhpMethod implements PhpMember, PhpElement, TypeAware
 {
     use Part\AbstractAwareTrait;
     use Part\CommentAwareTrait;
@@ -24,8 +26,6 @@ final class PhpMethod implements PhpMember
     use Part\TypeAwareTrait;
     use Part\VisibilityAwareTrait;
     use Part\StaticAwareTrait;
-    use Part\ParentAwareTrait;
-    use Helper\Traits\StaticCreateAwareTrait;
     use Helper\Traits\MethodOverloadAwareTrait;
 
     private ?string $body = '';
@@ -36,6 +36,8 @@ final class PhpMethod implements PhpMember
     private array $parameters = [];
 
     private bool $variadic = false;
+
+    private ?PhpStruct $parent = null;
 
     public function __toString(): string
     {
@@ -61,6 +63,11 @@ final class PhpMethod implements PhpMember
         return $output;
     }
 
+    public static function create(...$args): self
+    {
+        return new self(...$args);
+    }
+
     public static function fromArray(array $from): self
     {
         [$className, $methodName] = $from;
@@ -69,13 +76,13 @@ final class PhpMethod implements PhpMember
         }
         $ref = ReflectionMethod::createFromName($className, $methodName);
 
-        return static::fromReflectionMethod($ref);
+        return self::fromReflectionMethod($ref);
     }
 
     public static function fromReflectionFunction(ReflectionFunction $ref): self
     {
         $method = new self($ref->getName());
-        $method->setParameters(array_map([PhpParameter::class, 'from'], $ref->getParameters()));
+        $method->setParameters(array_map(PhpParameter::class . '::from', $ref->getParameters()));
         $method->setVariadic($ref->isVariadic());
         $method->setBody($ref->getBodyCode());
         $method->setReference($ref->returnsReference());
@@ -91,7 +98,7 @@ final class PhpMethod implements PhpMember
     public static function fromReflectionMethod(ReflectionMethod $ref): self
     {
         $method = new self($ref->getName());
-        $method->setParameters(array_map([PhpParameter::class, 'from'], $ref->getParameters()));
+        $method->setParameters(array_map(PhpParameter::class . '::from', $ref->getParameters()));
         $method->setStatic($ref->isStatic());
         $method->setVariadic($ref->isVariadic());
         $isInterface = $ref->getDeclaringClass()->isInterface();
@@ -123,21 +130,31 @@ final class PhpMethod implements PhpMember
     {
         $parts = explode('::', $from);
 
-        if (\count($parts) === 2) {
+        if (2 === \count($parts)) {
             [$className, $methodName] = $parts;
             $ref = ReflectionMethod::createFromName($className, $methodName);
 
-            return static::fromReflectionMethod($ref);
+            return self::fromReflectionMethod($ref);
         }
 
-        if (\count($parts) === 1) {
+        if (1 === \count($parts)) {
             [$methodName] = $parts;
             $ref = ReflectionFunction::createFromName($methodName);
 
-            return static::fromReflectionFunction($ref);
+            return self::fromReflectionFunction($ref);
         }
 
         throw new  \InvalidArgumentException("Invalid method/function name $from");
+    }
+
+    public function getParent(): ?PhpStruct
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?PhpStruct $parent): void
+    {
+        $this->parent = $parent;
     }
 
     public function validate(): self
@@ -161,7 +178,15 @@ final class PhpMethod implements PhpMember
 
     public function hasBody(): bool
     {
-        return !($this->isAbstract() || ($this->getParent() && $this->getParent()->getType() === PhpStruct::TYPE_INTERFACE));
+        if ($this->isAbstract()) {
+            return false;
+        }
+
+        if ($this->getParent()) {
+            return $this->getParent()->getType() !== PhpStruct::TYPE_INTERFACE;
+        }
+
+        return true;
     }
 
     public function getBody(): ?string
@@ -169,7 +194,7 @@ final class PhpMethod implements PhpMember
         return $this->body;
     }
 
-    public function setBody(string $code = null): self
+    public function setBody(?string $code): self
     {
         $this->body = $code;
 

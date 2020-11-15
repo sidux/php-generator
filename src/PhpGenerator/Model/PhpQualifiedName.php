@@ -8,18 +8,19 @@ use Sidux\PhpGenerator\Model\Contract\NamespaceAware;
 use Sidux\PhpGenerator\Model\Contract\PhpMember;
 use Sidux\PhpGenerator\Model\Part;
 
-class PhpName implements NamespaceAware, PhpMember
+class PhpQualifiedName implements NamespaceAware, PhpMember
 {
     use Part\NamespaceAwareTrait;
-    use Part\ParentAwareTrait;
 
     protected ?string $alias;
+
+    protected ?PhpStruct $parent = null;
 
     public function __construct(string $qualifiedName, ?string $alias = null)
     {
         $this->setQualifiedName($qualifiedName);
         $this->setAlias($alias);
-        $parent = $this->getStructParent();
+        $parent = $this->getParent();
         if ($parent && $parent->hasResolveTypes()) {
             $parent->addUse($qualifiedName, $alias);
         }
@@ -30,9 +31,19 @@ class PhpName implements NamespaceAware, PhpMember
         if (!$this->qualifiedName) {
             return $this->name;
         }
-        $qualifiedName = $this->getStructParent() ? $this->qualifiedName : ltrim($this->qualifiedName, '\\');
+        $qualifiedName = $this->getParent() ? $this->qualifiedName : ltrim($this->qualifiedName, '\\');
 
         return $this->alias ?? ($this->isResolved() ? $this->name : $qualifiedName);
+    }
+
+    public function getParent(): ?PhpStruct
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?PhpStruct $parent): void
+    {
+        $this->parent = $parent;
     }
 
     public function getAlias(): ?string
@@ -42,7 +53,7 @@ class PhpName implements NamespaceAware, PhpMember
 
     public function isResolved(): bool
     {
-        $parent = $this->getStructParent();
+        $parent = $this->getParent();
         if (!$parent) {
             return false;
         }

@@ -4,18 +4,11 @@ declare(strict_types=1);
 
 namespace Sidux\PhpGenerator\Model\Contract;
 
-use Sidux\PhpGenerator\Model\PhpMethod;
 use Sidux\PhpGenerator\Model\PhpStruct;
 
 interface PhpMember
 {
-    /**
-     * @return null|PhpStruct|PhpMethod
-     */
-    public function getParent();
+    public function getParent(): ?PhpStruct;
 
-    /**
-     * @param null|PhpStruct|PhpMethod $parent
-     */
-    public function setParent($parent): void;
+    public function setParent(?PhpStruct $parent);
 }

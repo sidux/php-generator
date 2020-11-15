@@ -19,7 +19,7 @@ class PhpConstantTest extends TestCase
 
         Assert::assertError(
             static function () {
-                new PhpConstant(null);
+                new PhpConstant(null); // @phpstan-ignore-line
             },
             \TypeError::class
         );
