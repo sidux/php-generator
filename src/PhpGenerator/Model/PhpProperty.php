@@ -25,6 +25,8 @@ final class PhpProperty extends PhpMember implements ValueAware, PhpElement, Typ
     use Part\TypeAwareTrait;
     use Part\StaticAwareTrait;
 
+    public const DEFAULT_VISIBILITY = PhpStruct::VISIBILITY_PRIVATE;
+
     public function __toString(): string
     {
         $output = '';
@@ -95,5 +97,13 @@ final class PhpProperty extends PhpMember implements ValueAware, PhpElement, Typ
         $ref = ReflectionProperty::createFromName($className, $propertyName);
 
         return self::fromReflectionProperty($ref);
+    }
+
+    /**
+     * @psalm-return value-of<PhpStruct::VISIBILITIES>
+     */
+    public function getDefaultVisibility(): string
+    {
+        return $this->getParent() ? $this->getParent()->getDefaultPropertyVisibility() : self::DEFAULT_VISIBILITY;
     }
 }

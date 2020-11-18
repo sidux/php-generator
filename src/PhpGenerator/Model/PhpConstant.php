@@ -15,18 +15,28 @@ class PhpConstant extends PhpMember implements ValueAware
     use Part\CommentAwareTrait;
     use Part\ValueAwareTrait;
 
+    public const DEFAULT_VISIBILITY = PhpStruct::VISIBILITY_PUBLIC;
+
     public function __toString(): string
     {
         $output = '';
         $output .= $this->commentsToString();
-        $output .= $this->visibility . ' ';
+        $output .= $this->getVisibility() . ' ';
         $output .= 'const ';
-        $output .= $this->name;
+        $output .= $this->getName();
         $output .= ' = ';
         $output .= $this->getValue();
         $output .= ';';
         $output .= "\n";
 
         return $output;
+    }
+
+    /**
+     * @psalm-return value-of<PhpStruct::VISIBILITIES>
+     */
+    public function getDefaultVisibility(): string
+    {
+        return $this->getParent() ? $this->getParent()->getDefaultConstVisibility() : self::DEFAULT_VISIBILITY;
     }
 }

@@ -94,6 +94,21 @@ final class PhpStruct implements NamespaceAware, PhpElement
      */
     private array $uses = [];
 
+    /**
+     * @psalm-var value-of<PhpStruct::VISIBILITIES>
+     */
+    private string $defaultConstVisibility = PhpConstant::DEFAULT_VISIBILITY;
+
+    /**
+     * @psalm-var value-of<PhpStruct::VISIBILITIES>
+     */
+    private string $defaultPropertyVisibility = PhpProperty::DEFAULT_VISIBILITY;
+
+    /**
+     * @psalm-var value-of<PhpStruct::VISIBILITIES>
+     */
+    private string $defaultMethodVisibility = PhpMethod::DEFAULT_VISIBILITY;
+
     public function __clone()
     {
         $clone = static function ($item) {
@@ -317,6 +332,60 @@ final class PhpStruct implements NamespaceAware, PhpElement
         foreach ($names as $name) {
             $this->addImplement($name);
         }
+
+        return $this;
+    }
+
+    /**
+     * @psalm-return value-of<PhpStruct::VISIBILITIES>
+     */
+    public function getDefaultConstVisibility(): string
+    {
+        return $this->defaultConstVisibility;
+    }
+
+    /**
+     * @psalm-return value-of<PhpStruct::VISIBILITIES>
+     */
+    public function getDefaultPropertyVisibility(): string
+    {
+        return $this->defaultPropertyVisibility;
+    }
+
+    /**
+     * @psalm-return value-of<PhpStruct::VISIBILITIES>
+     */
+    public function getDefaultMethodVisibility(): string
+    {
+        return $this->defaultMethodVisibility;
+    }
+
+    /**
+     * @psalm-param value-of<PhpStruct::VISIBILITIES> $visibility
+     */
+    public function setDefaultConstVisibility(string $visibility): self
+    {
+        $this->defaultConstVisibility = $visibility;
+
+        return $this;
+    }
+
+    /**
+     * @psalm-param value-of<PhpStruct::VISIBILITIES> $visibility
+     */
+    public function setDefaultPropertyVisibility(string $visibility): self
+    {
+        $this->defaultPropertyVisibility = $visibility;
+
+        return $this;
+    }
+
+    /**
+     * @psalm-param value-of<PhpStruct::VISIBILITIES> $visibility
+     */
+    public function setDefaultMethodVisibility(string $visibility): self
+    {
+        $this->defaultMethodVisibility = $visibility;
 
         return $this;
     }

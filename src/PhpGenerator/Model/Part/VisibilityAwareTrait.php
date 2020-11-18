@@ -14,11 +14,13 @@ trait VisibilityAwareTrait
     /**
      * @psalm-var value-of<PhpStruct::VISIBILITIES>
      */
-    private string $visibility = PhpStruct::VISIBILITY_PUBLIC;
+    private ?string $visibility = null;
+
+    abstract public function getDefaultVisibility(): string;
 
     public function getVisibility(): string
     {
-        return $this->visibility;
+        return $this->visibility ?? $this->getDefaultVisibility();
     }
 
     /**

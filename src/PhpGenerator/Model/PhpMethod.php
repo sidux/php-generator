@@ -28,6 +28,8 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
     use Part\StaticAwareTrait;
     use Helper\Traits\MethodOverloadAwareTrait;
 
+    public const DEFAULT_VISIBILITY = PhpStruct::VISIBILITY_PUBLIC;
+
     private ?string $body = '';
 
     /**
@@ -240,5 +242,13 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
         $this->parameters[$parameter->getName()] = $parameter;
 
         return $parameter;
+    }
+
+    /**
+     * @psalm-return value-of<PhpStruct::VISIBILITIES>
+     */
+    public function getDefaultVisibility(): string
+    {
+        return $this->getParent() ? $this->getParent()->getDefaultMethodVisibility() : self::DEFAULT_VISIBILITY;
     }
 }

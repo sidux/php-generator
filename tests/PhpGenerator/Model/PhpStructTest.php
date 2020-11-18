@@ -135,7 +135,7 @@ final class PhpStructTest extends TestCase
         Assert::assertTrue($class->hasProperty('sections'));
         Assert::assertFalse($class->hasProperty('unknown'));
         Assert::assertTrue($p->isStatic());
-        Assert::assertSame(PhpStruct::VISIBILITY_PUBLIC, $p->getVisibility());
+        Assert::assertSame(PhpStruct::VISIBILITY_PRIVATE, $p->getVisibility());
 
         $m = $class->addMethod('getHandle')
                    ->addComment('Returns file handle.')
@@ -184,6 +184,7 @@ final class PhpStructTest extends TestCase
                ->setReference(true)
                ->addType('array')
         ;
+        $class->setDefaultPropertyVisibility(PhpStruct::VISIBILITY_PUBLIC);
 
         Assert::assertStringEqualsFile(__DIR__ . '/../Expected/ClassType.expect', (string)$class);
 
