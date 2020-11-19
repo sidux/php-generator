@@ -12,7 +12,7 @@ use Sidux\PhpGenerator\Model\Contract\PhpElement;
 use Sidux\PhpGenerator\Model\Contract\TypeAware;
 use Sidux\PhpGenerator\Model\Part;
 
-class PhpType implements PhpElement
+class PhpType implements PhpElement, NamespaceAware
 {
     use Part\NamespaceAwareTrait;
     use Helper\Traits\MethodOverloadAwareTrait;
