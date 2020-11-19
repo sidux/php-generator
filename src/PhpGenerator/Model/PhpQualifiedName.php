@@ -20,7 +20,7 @@ class PhpQualifiedName extends PhpMember implements NamespaceAware
         $this->setAlias($alias);
         $parent = $this->getParent();
         if ($parent && $parent->hasResolveTypes()) {
-            $parent->addUse($qualifiedName, $alias);
+            $parent->addNamespaceUse($qualifiedName, $alias);
         }
     }
 

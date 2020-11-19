@@ -252,8 +252,15 @@ final class PhpStruct implements NamespaceAware, PhpElement
         return isset($this->methods[$name]);
     }
 
-    public function hasProperty(string $name): bool
+    /**
+     * @param PhpProperty|string $name
+     */
+    public function hasProperty($name): bool
     {
+        if ($name instanceof PhpProperty) {
+            $name = $name->getName();
+        }
+
         return isset($this->properties[$name]);
     }
 
@@ -441,8 +448,14 @@ final class PhpStruct implements NamespaceAware, PhpElement
         return $this;
     }
 
-    public function getProperty(string $name): PhpProperty
+    /**
+     * @param PhpProperty|string $name
+     */
+    public function getProperty($name): PhpProperty
     {
+        if ($name instanceof PhpProperty) {
+            $name = $name->getName();
+        }
         if (!isset($this->properties[$name])) {
             throw new \InvalidArgumentException("PhpProperty '$name' not found.");
         }
@@ -705,7 +718,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     /**
      * @param string|NamespaceAware $name
      */
-    public function addUse($name, ?string $alias = null): PhpNamespaceUse
+    public function addNamespaceUse($name, ?string $alias = null): PhpNamespaceUse
     {
         if ($name instanceof NamespaceAware) {
             $name = $name->getQualifiedName();
