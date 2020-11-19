@@ -253,27 +253,42 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
     }
 
     /**
-     * @param string[] $initProperties
+     * @param string|PhpProperty $initProperty
      */
-    public function initProperties(array $initProperties): self
+    public function initProperty($initProperty): self
     {
         if (!$this->getParent()) {
             throw new \RuntimeException('This method has no parent class');
         }
-        foreach ($initProperties as $propertyName) {
-            if ($this->getParent()->hasProperty($propertyName)) {
-                $property = $this->getParent()->getProperty($propertyName);
+        if (\is_string($initProperty)) {
+            if ($this->getParent()->hasProperty($initProperty)) {
+                $property = $this->getParent()->getProperty($initProperty);
             } else {
-                $property = $this->getParent()->addProperty($propertyName);
+                $property = $this->getParent()->addProperty($initProperty);
             }
-            $parameter = $this->addParameter($propertyName)
-                              ->addTypes($property->getTypes())
-            ;
-            if ($property->getValue()) {
-                $parameter->setValue($property->getValue());
-            }
+        } else {
+            $property = $initProperty;
+        }
 
-            $this->addBody("\$this->$propertyName = \$$propertyName;");
+        $parameter = $this->addParameter($property->getName())
+                          ->addTypes($property->getTypes())
+        ;
+        if ($property->getValue()) {
+            $parameter->setValue($property->getValue());
+        }
+
+        $this->addBody("\$this->{$property->getName()} = \${$property->getName()};");
+
+        return $this;
+    }
+
+    /**
+     * @param string[]|PhpProperty[] $initProperties
+     */
+    public function initProperties(array $initProperties): self
+    {
+        foreach ($initProperties as $initProperty) {
+            $this->initProperty($initProperty);
         }
 
         return $this;
