@@ -251,4 +251,31 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
     {
         return $this->getParent() ? $this->getParent()->getDefaultMethodVisibility() : self::DEFAULT_VISIBILITY;
     }
+
+    /**
+     * @param string[] $initProperties
+     */
+    public function initProperties(array $initProperties): self
+    {
+        if (!$this->getParent()) {
+            throw new \RuntimeException('This method has no parent class');
+        }
+        foreach ($initProperties as $propertyName) {
+            if ($this->getParent()->hasProperty($propertyName)) {
+                $property = $this->getParent()->getProperty($propertyName);
+            } else {
+                $property = $this->getParent()->addProperty($propertyName);
+            }
+            $parameter = $this->addParameter($propertyName)
+                              ->addTypes($property->getTypes())
+            ;
+            if ($property->getValue()) {
+                $parameter->setValue($property->getValue());
+            }
+
+            $this->addBody("\$this->$propertyName = \$$propertyName;");
+        }
+
+        return $this;
+    }
 }

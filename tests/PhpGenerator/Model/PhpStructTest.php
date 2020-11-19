@@ -127,6 +127,8 @@ final class PhpStructTest extends TestCase
                    ->setStatic(true)
         ;
 
+        $class->addConstructor(['typed2']);
+
         $class->addStaticConstructor();
         $class->addSetter('typed1');
         $class->addSetter('typed2');
@@ -190,7 +192,7 @@ final class PhpStructTest extends TestCase
 
 
         $methods = $class->getMethods();
-        Assert::assertCount(6, $methods);
+        Assert::assertCount(7, $methods);
         $class->setMethods(array_values($methods));
         Assert::assertSame($methods, $class->getMethods());
 

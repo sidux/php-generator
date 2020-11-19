@@ -37,6 +37,11 @@ abstract class Example extends ParentClass implements IExample, IOne
 
     public static array $sections = ['first' => true];
 
+    public function __construct(?array $typed2 = null)
+    {
+        $this->typed2 = $typed2;
+    }
+
     public static function create(): self
     {
         return new self();

@@ -594,15 +594,31 @@ final class PhpStruct implements NamespaceAware, PhpElement
         return $this->addMethod($method);
     }
 
-    public function addStaticConstructor(string $name = 'create'): PhpMethod
+    /**
+     * @param string[] $initProperties
+     */
+    public function addConstructor(array $initProperties = []): PhpMethod
+    {
+        $method = new PhpMethod('__construct');
+        $this->addMethod($method);
+        $method->initProperties($initProperties);
+
+        return $method;
+    }
+
+    /**
+     * @param string[] $initProperties
+     */
+    public function addStaticConstructor(string $name = 'create', array $initProperties = []): PhpMethod
     {
         $method = new PhpMethod($name);
-        $method->setVisibility(self::VISIBILITY_PUBLIC);
         $method->setStatic();
-        $method->addBody('return new self();');
         $method->addType(PhpType::SELF);
+        $this->addMethod($method);
+        $method->initProperties($initProperties);
+        $method->addBody('return new self();');
 
-        return $this->addMethod($method);
+        return $method;
     }
 
     /**
