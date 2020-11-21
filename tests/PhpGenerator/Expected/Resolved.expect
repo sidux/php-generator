@@ -1,0 +1,25 @@
+<?php
+
+declare(strict_types=1);
+
+namespace A;
+
+use Sidux\PhpGenerator\Stub\Class2;
+use Sidux\PhpGenerator\Stub\Class3;
+use Sidux\PhpGenerator\Stub\Class4;
+use Sidux\PhpGenerator\Stub\Class5;
+use Sidux\PhpGenerator\Stub\Interface1;
+
+class B extends Class4 implements Interface1
+{
+    private Class5 $toto;
+
+    public function __construct(Class5 $toto)
+    {
+        $this->toto = $toto;
+    }
+
+    public function execute(Class3 $request): Class2
+    {
+    }
+}

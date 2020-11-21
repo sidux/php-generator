@@ -130,6 +130,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
 
         $output .= $this->hasStrictTypes() ? "declare(strict_types=1);\n\n" : null;
         $output .= $this->hasNamespace() ? "namespace $this->namespace;\n\n" : null;
+        $output .= $this->getNamespaceUses() ? implode("\n", $this->getNamespaceUses()) . "\n\n" : null;
         $output .= $this->commentsToString();
         $output .= $this->isAbstract() ? 'abstract ' : null;
         $output .= $this->isFinal() ? 'final ' : null;
@@ -522,7 +523,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
      */
     public function getNamespaceUsesStrings(): array
     {
-        return array_map(static fn(PhpNamespaceUse $namespace) => (string)$namespace->getQualifiedName(), $this->namespaceUses);
+        return array_values(array_map(static fn(PhpNamespaceUse $namespace) => (string)$namespace->getQualifiedName(), $this->namespaceUses));
     }
 
     /**
@@ -654,6 +655,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
         $this->validateName($name);
         $this->implements[$name] = new PhpQualifiedName($name);
         $this->implements[$name]->setParent($this);
+        $this->implements[$name]->resolve();
 
         return $this->implements[$name];
     }
@@ -748,7 +750,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
         if ($alias) {
             $this->namespaceUses[$alias] = $namespaceUse;
         } else {
-            $this->namespaceUses[] = $namespaceUse;
+            $this->namespaceUses[$name] = $namespaceUse;
         }
         asort($this->namespaceUses);
 

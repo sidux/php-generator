@@ -218,7 +218,7 @@ class PhpType implements PhpElement, NamespaceAware
     public function resolve(): self
     {
         $struct = $this->getStructParent();
-        if ($struct && $this->isResolved()) {
+        if ($struct && $this->isResolved() && $struct->getNamespace() !== $this->getNamespace()) {
             $struct->addNamespaceUse($this);
         }
 

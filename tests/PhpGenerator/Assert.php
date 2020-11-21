@@ -10,6 +10,21 @@ use PHPUnit\Framework\AssertionFailedError;
 class Assert extends BaseAssert
 {
 
+    /**
+     * @param \Stringable|string $subject
+     */
+    public static function assertExpect(string $expectFile, $subject, bool $create = false): void
+    {
+        $expectFile = __DIR__ . "/Expected/$expectFile";
+        if ($create && !file_exists($expectFile)) {
+            file_put_contents($expectFile, (string)$subject);
+        }
+        static::assertStringEqualsFile(
+            $expectFile,
+            (string)$subject
+        );
+    }
+
     public static function assertThrowable(
         callable $test,
         string $expectedThrowableClass = \Throwable::class,
@@ -60,6 +75,7 @@ class Assert extends BaseAssert
                 );
             }
         }
+
         return $throwableClass;
     }
 

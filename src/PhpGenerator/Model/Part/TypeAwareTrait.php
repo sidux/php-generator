@@ -114,6 +114,7 @@ trait TypeAwareTrait
             $type->setParent($this);
         }
         $this->types[(string)$type] = $type;
+        $this->resolve();
 
         return $this;
     }

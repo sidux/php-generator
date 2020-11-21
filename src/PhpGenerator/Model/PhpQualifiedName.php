@@ -56,7 +56,7 @@ class PhpQualifiedName extends PhpMember implements NamespaceAware
     public function resolve(): self
     {
         $struct = $this->getParent();
-        if ($struct && $this->isResolved()) {
+        if ($struct && $this->isResolved() && $struct->getNamespace() !== $this->getNamespace()) {
             $struct->addNamespaceUse($this);
         }
 

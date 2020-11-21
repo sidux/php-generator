@@ -11,6 +11,7 @@ use Sidux\PhpGenerator\Assert;
 use Sidux\PhpGenerator\Helper\StubHelper;
 use Sidux\PhpGenerator\Stub\B;
 use Sidux\PhpGenerator\Stub\Class1;
+use Sidux\PhpGenerator\Stub\Class2;
 use Sidux\PhpGenerator\Stub\Class3;
 use Sidux\PhpGenerator\Stub\Class4;
 use Sidux\PhpGenerator\Stub\Class5;
@@ -432,5 +433,24 @@ final class PhpStructTest extends TestCase
         ;
 
         Assert::assertNull($method->getBody());
+    }
+
+    /**
+     * @test
+     */
+    public function resolve(): void
+    {
+        $class = new PhpStruct('A\\B');
+        $class->addExtend(Class4::class);
+        $class->addImplement(Interface1::class);
+        $constructor = $class->addConstructor();
+        $constructor->initProperty(PhpProperty::create('toto')->addType(Class5::class));
+        $class->addMethod('execute')
+              ->addType(Class2::class)
+              ->addParameter('request')
+              ->addType(Class3::class)
+        ;
+
+        Assert::assertExpect('Resolved.expect', $class);
     }
 }
