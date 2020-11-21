@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Sidux\PhpGenerator\Model;
 
+use Sidux\PhpGenerator\Model\Contract\Member;
 use Sidux\PhpGenerator\Model\Contract\NamespaceAware;
-use Sidux\PhpGenerator\Model\Contract\PhpMember;
 use Sidux\PhpGenerator\Model\Part;
 
-class PhpQualifiedName extends PhpMember implements NamespaceAware
+class QualifiedName extends Member implements NamespaceAware
 {
     use Part\NamespaceAwareTrait;
 

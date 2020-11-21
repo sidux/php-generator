@@ -6,8 +6,8 @@ namespace Sidux\PhpGenerator\Model;
 
 use Roave\BetterReflection\Reflection\ReflectionProperty;
 use Sidux\PhpGenerator\Helper;
-use Sidux\PhpGenerator\Model\Contract\PhpElement;
-use Sidux\PhpGenerator\Model\Contract\PhpMember;
+use Sidux\PhpGenerator\Model\Contract\Element;
+use Sidux\PhpGenerator\Model\Contract\Member;
 use Sidux\PhpGenerator\Model\Contract\TypeAware;
 use Sidux\PhpGenerator\Model\Contract\ValueAware;
 use Sidux\PhpGenerator\Model\Part;
@@ -15,7 +15,7 @@ use Sidux\PhpGenerator\Model\Part;
 /**
  * @method static self from(ReflectionProperty|array|string $from)
  */
-final class PhpProperty extends PhpMember implements ValueAware, PhpElement, TypeAware
+final class Property extends Member implements ValueAware, Element, TypeAware
 {
     use Helper\Traits\MethodOverloadAwareTrait;
     use Part\NameAwareTrait;
@@ -25,7 +25,7 @@ final class PhpProperty extends PhpMember implements ValueAware, PhpElement, Typ
     use Part\TypeAwareTrait;
     use Part\StaticAwareTrait;
 
-    public const DEFAULT_VISIBILITY = PhpStruct::VISIBILITY_PRIVATE;
+    public const DEFAULT_VISIBILITY = Struct::VISIBILITY_PRIVATE;
 
     public function __toString(): string
     {
@@ -54,7 +54,7 @@ final class PhpProperty extends PhpMember implements ValueAware, PhpElement, Typ
         return self::fromReflectionProperty($ref);
     }
 
-    public static function fromPrototype(string $property): PhpProperty
+    public static function fromPrototype(string $property): Property
     {
         preg_match('/(?:([\w|\\\\\[\]]+) )?\$?(\w+)(?:\s*=\s*(.+))?/', $property, $parts);
 
@@ -66,7 +66,7 @@ final class PhpProperty extends PhpMember implements ValueAware, PhpElement, Typ
         $propertyObj->setTypes(explode('|', $type));
 
         if (null !== $value) {
-            $propertyObj->setValue(new PhpValue($value));
+            $propertyObj->setValue(new Value($value));
         }
 
         return $propertyObj;
@@ -86,11 +86,11 @@ final class PhpProperty extends PhpMember implements ValueAware, PhpElement, Typ
         $prop->setComment($ref->getDocComment());
 
         if ($ref->isPrivate()) {
-            $prop->setVisibility(PhpStruct::VISIBILITY_PRIVATE);
+            $prop->setVisibility(Struct::VISIBILITY_PRIVATE);
         } elseif ($ref->isProtected()) {
-            $prop->setVisibility(PhpStruct::VISIBILITY_PROTECTED);
+            $prop->setVisibility(Struct::VISIBILITY_PROTECTED);
         } else {
-            $prop->setVisibility(PhpStruct::VISIBILITY_PUBLIC);
+            $prop->setVisibility(Struct::VISIBILITY_PUBLIC);
         }
 
         return $prop;
@@ -105,7 +105,7 @@ final class PhpProperty extends PhpMember implements ValueAware, PhpElement, Typ
     }
 
     /**
-     * @psalm-return value-of<PhpStruct::VISIBILITIES>
+     * @psalm-return value-of<Struct::VISIBILITIES>
      */
     public function getDefaultVisibility(): string
     {

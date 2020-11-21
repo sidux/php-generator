@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Sidux\PhpGenerator\Model;
 
-use Sidux\PhpGenerator\Model\Contract\PhpElement;
+use Sidux\PhpGenerator\Model\Contract\Element;
 
-class PhpNamespaceUse extends PhpQualifiedName implements PhpElement
+class NamespaceUse extends QualifiedName implements Element
 {
     public function __toString(): string
     {

@@ -7,12 +7,12 @@ namespace Sidux\PhpGenerator\Model;
 use Roave\BetterReflection\Reflection\ReflectionType;
 use Sidux\PhpGenerator\Helper;
 use Sidux\PhpGenerator\Helper\PhpHelper;
+use Sidux\PhpGenerator\Model\Contract\Element;
 use Sidux\PhpGenerator\Model\Contract\NamespaceAware;
-use Sidux\PhpGenerator\Model\Contract\PhpElement;
 use Sidux\PhpGenerator\Model\Contract\TypeAware;
 use Sidux\PhpGenerator\Model\Part;
 
-class PhpType implements PhpElement, NamespaceAware
+class Type implements Element, NamespaceAware
 {
     use Part\NamespaceAwareTrait;
     use Helper\Traits\MethodOverloadAwareTrait;
@@ -143,7 +143,7 @@ class PhpType implements PhpElement, NamespaceAware
         return null;
     }
 
-    public function getStructParent(): ?PhpStruct
+    public function getStructParent(): ?Struct
     {
         $parent = $this->getParent();
         while ($parent
@@ -155,7 +155,7 @@ class PhpType implements PhpElement, NamespaceAware
             return null;
         }
 
-        if (!$parent instanceof PhpStruct) {
+        if (!$parent instanceof Struct) {
             return null;
         }
 

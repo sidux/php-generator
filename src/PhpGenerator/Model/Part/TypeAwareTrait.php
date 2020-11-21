@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Sidux\PhpGenerator\Model\Part;
 
-use phpDocumentor\Reflection\Type;
+use phpDocumentor\Reflection\Type as DocType;
 use Roave\BetterReflection\Reflection\ReflectionType;
 use Sidux\PhpGenerator\Model\Contract\NamespaceAware;
 use Sidux\PhpGenerator\Model\Contract\TypeAware;
-use Sidux\PhpGenerator\Model\PhpType;
+use Sidux\PhpGenerator\Model\Type;
 
 /**
  * @internal
@@ -16,7 +16,7 @@ use Sidux\PhpGenerator\Model\PhpType;
 trait TypeAwareTrait
 {
     /**
-     * @var array<string, PhpType>
+     * @var array<string, Type>
      */
     private array $types = [];
 
@@ -30,7 +30,7 @@ trait TypeAwareTrait
     }
 
     /**
-     * @return array<string, PhpType>
+     * @return array<string, Type>
      */
     public function getDocTypes(): array
     {
@@ -41,8 +41,8 @@ trait TypeAwareTrait
     {
         $types  = $this->getTypes();
         $prefix = $this->isNullable() ? '?' : '';
-        if (isset($types[PhpType::NULL])) {
-            unset($types[PhpType::NULL]);
+        if (isset($types[Type::NULL])) {
+            unset($types[Type::NULL]);
         }
 
         if (1 === \count($types)) {
@@ -52,22 +52,22 @@ trait TypeAwareTrait
             }
         }
 
-        if (isset($types[PhpType::ITERABLE])) {
-            unset($types[PhpType::ITERABLE]);
+        if (isset($types[Type::ITERABLE])) {
+            unset($types[Type::ITERABLE]);
             foreach ($types as $index => $type) {
                 if (!$type->isCollection()) {
                     return null;
                 }
             }
 
-            return $prefix . $this->types[PhpType::ITERABLE];
+            return $prefix . $this->types[Type::ITERABLE];
         }
 
         return null;
     }
 
     /**
-     * @return array<string, PhpType>|\ArrayAccess
+     * @return array<string, Type>|\ArrayAccess
      */
     public function getTypes(): array
     {
@@ -75,7 +75,7 @@ trait TypeAwareTrait
     }
 
     /**
-     * @param array<string|int, null|string|NamespaceAware|PhpType|ReflectionType|Type> $types
+     * @param array<string|int, null|string|NamespaceAware|Type|ReflectionType|Type> $types
      */
     public function setTypes(array $types): self
     {
@@ -87,7 +87,7 @@ trait TypeAwareTrait
     public function isNullable(): bool
     {
         foreach ($this->getTypes() as $type) {
-            if ((string)$type === PhpType::NULL) {
+            if ((string)$type === Type::NULL) {
                 return true;
             }
         }
@@ -102,13 +102,13 @@ trait TypeAwareTrait
         return $this->addTypeFromString($type);
     }
 
-    public function addTypeFromPhpType(PhpType $type): self
+    public function addTypeFromPhpType(Type $type): self
     {
         if ($type->isCollection()) {
-            $this->addType(PhpType::ITERABLE);
+            $this->addType(Type::ITERABLE);
         }
         if ($type->isNullable()) {
-            $this->addType(PhpType::NULL);
+            $this->addType(Type::NULL);
         }
         if ($this instanceof TypeAware) {
             $type->setParent($this);
@@ -121,7 +121,7 @@ trait TypeAwareTrait
 
     public function addTypeFromReflectionType(ReflectionType $ref): self
     {
-        $type = PhpType::fromReflectionType($ref);
+        $type = Type::fromReflectionType($ref);
 
         return $this->addTypeFromPhpType($type);
     }
@@ -131,12 +131,12 @@ trait TypeAwareTrait
         if (!$type) {
             return $this;
         }
-        $phpType = new PhpType($type);
+        $phpType = new Type($type);
 
         return $this->addTypeFromPhpType($phpType);
     }
 
-    public function addTypeFromType(Type $type): self
+    public function addTypeFromType(DocType $type): self
     {
         return $this->addTypeFromString((string)$type);
     }
@@ -147,7 +147,7 @@ trait TypeAwareTrait
     }
 
     /**
-     * @param array<string|int, null|string|NamespaceAware|PhpType|ReflectionType|Type> $types
+     * @param array<string|int, null|string|NamespaceAware|Type|ReflectionType|DocType> $types
      */
     public function addTypes(array $types): self
     {
@@ -159,7 +159,7 @@ trait TypeAwareTrait
     }
 
     /**
-     * @param null|string|NamespaceAware|PhpType|ReflectionType|Type $type
+     * @param null|string|NamespaceAware|Type|ReflectionType|DocType $type
      */
     public function addType($type): self
     {
@@ -175,11 +175,11 @@ trait TypeAwareTrait
             return $this->addTypeFromReflectionType($type);
         }
 
-        if ($type instanceof PhpType) {
+        if ($type instanceof Type) {
             return $this->addTypeFromPhpType($type);
         }
 
-        if ($type instanceof Type) {
+        if ($type instanceof DocType) {
             return $this->addTypeFromType($type);
         }
 

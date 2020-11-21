@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sidux\PhpGenerator\Model\Part;
 
-use Sidux\PhpGenerator\Model\PhpStruct;
+use Sidux\PhpGenerator\Model\Struct;
 
 /**
  * @internal
@@ -12,7 +12,7 @@ use Sidux\PhpGenerator\Model\PhpStruct;
 trait VisibilityAwareTrait
 {
     /**
-     * @psalm-var value-of<PhpStruct::VISIBILITIES>
+     * @psalm-var value-of<Struct::VISIBILITIES>
      */
     private ?string $visibility = null;
 
@@ -24,12 +24,12 @@ trait VisibilityAwareTrait
     }
 
     /**
-     * @psalm-param value-of<PhpStruct::VISIBILITIES> $visibility
+     * @psalm-param value-of<Struct::VISIBILITIES> $visibility
      */
     public function setVisibility(string $visibility): self
     {
-        if ($visibility && !\in_array($visibility, PhpStruct::VISIBILITIES, true)) {
-            throw new \InvalidArgumentException('Argument must be ' . implode('|', PhpStruct::VISIBILITIES));
+        if ($visibility && !\in_array($visibility, Struct::VISIBILITIES, true)) {
+            throw new \InvalidArgumentException('Argument must be ' . implode('|', Struct::VISIBILITIES));
         }
         $this->visibility = $visibility;
 

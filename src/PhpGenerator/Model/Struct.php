@@ -12,15 +12,15 @@ use Roave\BetterReflection\SourceLocator\Type\SingleFileSourceLocator;
 use Sidux\PhpGenerator\Helper;
 use Sidux\PhpGenerator\Helper\PhpHelper;
 use Sidux\PhpGenerator\Helper\StringHelper;
+use Sidux\PhpGenerator\Model\Contract\Element;
+use Sidux\PhpGenerator\Model\Contract\Member;
 use Sidux\PhpGenerator\Model\Contract\NamespaceAware;
-use Sidux\PhpGenerator\Model\Contract\PhpElement;
-use Sidux\PhpGenerator\Model\Contract\PhpMember;
 use Sidux\PhpGenerator\Model\Part;
 
 /**
  * @method static self from(ReflectionClass|ReflectionObject|string|object $from)
  */
-final class PhpStruct implements NamespaceAware, PhpElement
+final class Struct implements NamespaceAware, Element
 {
     use Part\CommentAwareTrait;
     use Part\NamespaceAwareTrait;
@@ -29,9 +29,9 @@ final class PhpStruct implements NamespaceAware, PhpElement
     use Helper\Traits\MethodOverloadAwareTrait;
 
     public const TYPES = [
-        PhpStruct::TYPE_CLASS,
-        PhpStruct::TYPE_INTERFACE,
-        PhpStruct::TYPE_TRAIT,
+        Struct::TYPE_CLASS,
+        Struct::TYPE_INTERFACE,
+        Struct::TYPE_TRAIT,
     ];
 
     public const
@@ -40,9 +40,9 @@ final class PhpStruct implements NamespaceAware, PhpElement
         TYPE_TRAIT = 'trait';
 
     public const VISIBILITIES = [
-        PhpStruct::VISIBILITY_PUBLIC,
-        PhpStruct::VISIBILITY_PROTECTED,
-        PhpStruct::VISIBILITY_PRIVATE,
+        Struct::VISIBILITY_PUBLIC,
+        Struct::VISIBILITY_PROTECTED,
+        Struct::VISIBILITY_PRIVATE,
     ];
 
     public const
@@ -51,27 +51,27 @@ final class PhpStruct implements NamespaceAware, PhpElement
         VISIBILITY_PRIVATE = 'private';
 
     /**
-     * @var array<string, PhpConstant>
+     * @var array<string, Constant>
      */
     private array $consts = [];
 
     /**
-     * @var array<string, PhpQualifiedName>
+     * @var array<string, QualifiedName>
      */
     private array $extends = [];
 
     /**
-     * @var array<string, PhpQualifiedName>
+     * @var array<string, QualifiedName>
      */
     private array $implements = [];
 
     /**
-     * @var array<string, PhpMethod>
+     * @var array<string, Method>
      */
     private array $methods = [];
 
     /**
-     * @var array<string, PhpProperty>
+     * @var array<string, Property>
      */
     private array $properties = [];
 
@@ -80,34 +80,34 @@ final class PhpStruct implements NamespaceAware, PhpElement
     private bool $strictTypes = true;
 
     /**
-     * @var array<string, PhpTraitUse>
+     * @var array<string, TraitUse>
      */
     private array $traits = [];
 
     /**
-     * @psalm-var value-of<PhpStruct::TYPES>
+     * @psalm-var value-of<Struct::TYPES>
      */
     private string $type = self::TYPE_CLASS;
 
     /**
-     * @var array<string, PhpNamespaceUse>
+     * @var array<string, NamespaceUse>
      */
     private array $namespaceUses = [];
 
     /**
-     * @psalm-var value-of<PhpStruct::VISIBILITIES>
+     * @psalm-var value-of<Struct::VISIBILITIES>
      */
-    private string $defaultConstVisibility = PhpConstant::DEFAULT_VISIBILITY;
+    private string $defaultConstVisibility = Constant::DEFAULT_VISIBILITY;
 
     /**
-     * @psalm-var value-of<PhpStruct::VISIBILITIES>
+     * @psalm-var value-of<Struct::VISIBILITIES>
      */
-    private string $defaultPropertyVisibility = PhpProperty::DEFAULT_VISIBILITY;
+    private string $defaultPropertyVisibility = Property::DEFAULT_VISIBILITY;
 
     /**
-     * @psalm-var value-of<PhpStruct::VISIBILITIES>
+     * @psalm-var value-of<Struct::VISIBILITIES>
      */
-    private string $defaultMethodVisibility = PhpMethod::DEFAULT_VISIBILITY;
+    private string $defaultMethodVisibility = Method::DEFAULT_VISIBILITY;
 
     public function __clone()
     {
@@ -221,14 +221,14 @@ final class PhpStruct implements NamespaceAware, PhpElement
         $props = [];
         foreach ($from->getImmediateProperties() as $prop) {
             if ($prop->isDefault()) {
-                $props[] = PhpProperty::from($prop);
+                $props[] = Property::from($prop);
             }
         }
         $class->setProperties($props);
 
         $methods = [];
         foreach ($from->getImmediateMethods() as $method) {
-            $methods[] = PhpMethod::from($method);
+            $methods[] = Method::from($method);
         }
         $class->setMethods($methods);
         $class->setConstants($from->getImmediateConstants());
@@ -254,11 +254,11 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @param PhpProperty|string $name
+     * @param Property|string $name
      */
     public function hasProperty($name): bool
     {
-        if ($name instanceof PhpProperty) {
+        if ($name instanceof Property) {
             $name = $name->getName();
         }
 
@@ -297,7 +297,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @return PhpConstant[]
+     * @return Constant[]
      */
     public function getConstants(): array
     {
@@ -305,7 +305,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @return array<string, PhpQualifiedName>
+     * @return array<string, QualifiedName>
      */
     public function getExtends(): array
     {
@@ -325,7 +325,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @return array<string, PhpQualifiedName>
+     * @return array<string, QualifiedName>
      */
     public function getImplements(): array
     {
@@ -345,7 +345,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @psalm-return value-of<PhpStruct::VISIBILITIES>
+     * @psalm-return value-of<Struct::VISIBILITIES>
      */
     public function getDefaultConstVisibility(): string
     {
@@ -353,7 +353,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @psalm-return value-of<PhpStruct::VISIBILITIES>
+     * @psalm-return value-of<Struct::VISIBILITIES>
      */
     public function getDefaultPropertyVisibility(): string
     {
@@ -361,7 +361,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @psalm-return value-of<PhpStruct::VISIBILITIES>
+     * @psalm-return value-of<Struct::VISIBILITIES>
      */
     public function getDefaultMethodVisibility(): string
     {
@@ -369,7 +369,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @psalm-param value-of<PhpStruct::VISIBILITIES> $visibility
+     * @psalm-param value-of<Struct::VISIBILITIES> $visibility
      */
     public function setDefaultConstVisibility(string $visibility): self
     {
@@ -379,7 +379,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @psalm-param value-of<PhpStruct::VISIBILITIES> $visibility
+     * @psalm-param value-of<Struct::VISIBILITIES> $visibility
      */
     public function setDefaultPropertyVisibility(string $visibility): self
     {
@@ -389,7 +389,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @psalm-param value-of<PhpStruct::VISIBILITIES> $visibility
+     * @psalm-param value-of<Struct::VISIBILITIES> $visibility
      */
     public function setDefaultMethodVisibility(string $visibility): self
     {
@@ -398,17 +398,17 @@ final class PhpStruct implements NamespaceAware, PhpElement
         return $this;
     }
 
-    public function getMethod(string $name): PhpMethod
+    public function getMethod(string $name): Method
     {
         if (!isset($this->methods[$name])) {
-            throw new \InvalidArgumentException("PhpMethod '$name' not found.");
+            throw new \InvalidArgumentException("Method '$name' not found.");
         }
 
         return $this->methods[$name];
     }
 
     /**
-     * @return array<string, PhpMethod>
+     * @return array<string, Method>
      */
     public function getMethods(): array
     {
@@ -416,7 +416,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @param PhpMethod[]|string[] $methods
+     * @param Method[]|string[] $methods
      */
     public function setMethods(array $methods): self
     {
@@ -429,7 +429,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @return array<string, PhpProperty>
+     * @return array<string, Property>
      */
     public function getProperties(): array
     {
@@ -437,7 +437,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @param PhpProperty[]|string[] $properties
+     * @param Property[]|string[] $properties
      */
     public function setProperties(array $properties): self
     {
@@ -450,15 +450,15 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @param PhpProperty|string $name
+     * @param Property|string $name
      */
-    public function getProperty($name): PhpProperty
+    public function getProperty($name): Property
     {
-        if ($name instanceof PhpProperty) {
+        if ($name instanceof Property) {
             $name = $name->getName();
         }
         if (!isset($this->properties[$name])) {
-            throw new \InvalidArgumentException("PhpProperty '$name' not found.");
+            throw new \InvalidArgumentException("Property '$name' not found.");
         }
 
         return $this->properties[$name];
@@ -476,7 +476,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @return array<string, PhpTraitUse>
+     * @return array<string, TraitUse>
      */
     public function getTraits(): array
     {
@@ -484,7 +484,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @param string[]|PhpTraitUse[] $names
+     * @param string[]|TraitUse[] $names
      */
     public function setTraits(array $names): self
     {
@@ -511,7 +511,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @return array<string, PhpNamespaceUse>
+     * @return array<string, NamespaceUse>
      */
     public function getNamespaceUses(): array
     {
@@ -519,15 +519,15 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @return array<string, PhpNamespaceUse>
+     * @return array<string, NamespaceUse>
      */
     public function getNamespaceUsesStrings(): array
     {
-        return array_values(array_map(static fn(PhpNamespaceUse $namespace) => (string)$namespace->getQualifiedName(), $this->namespaceUses));
+        return array_values(array_map(static fn(NamespaceUse $namespace) => (string)$namespace->getQualifiedName(), $this->namespaceUses));
     }
 
     /**
-     * @param PhpConstant[]|mixed[] $consts
+     * @param Constant[]|mixed[] $consts
      */
     public function setConstants(array $consts): self
     {
@@ -556,13 +556,13 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @param PhpConstant|string $const
+     * @param Constant|string $const
      * @param mixed $value
      */
-    public function addConstant($const, $value = null): PhpConstant
+    public function addConstant($const, $value = null): Constant
     {
-        if (!$const instanceof PhpConstant) {
-            $const = new PhpConstant($const);
+        if (!$const instanceof Constant) {
+            $const = new Constant($const);
             $const->setValue($value);
         }
         $const->setParent($this);
@@ -580,18 +580,18 @@ final class PhpStruct implements NamespaceAware, PhpElement
             $name = $name->getQualifiedName();
         }
         $this->validateName($name);
-        $this->extends[$name] = new PhpQualifiedName($name);
+        $this->extends[$name] = new QualifiedName($name);
         $this->extends[$name]->setParent($this);
         $this->extends[$name]->resolve();
 
         return $this;
     }
 
-    public function addGetter(string $propertyName, string $prefix = null): PhpMethod
+    public function addGetter(string $propertyName, string $prefix = null): Method
     {
         $property = $this->getProperty($propertyName);
-        $prefix   ??= $property->getTypeHint() === PhpType::BOOL ? 'is' : 'get';
-        $method   = new PhpMethod($prefix . ucfirst($propertyName));
+        $prefix   ??= $property->getTypeHint() === Type::BOOL ? 'is' : 'get';
+        $method   = new Method($prefix . ucfirst($propertyName));
         $method->setVisibility(self::VISIBILITY_PUBLIC);
         $method->addBody("return \$this->$propertyName;");
         $method->setTypes($property->getTypes());
@@ -599,10 +599,10 @@ final class PhpStruct implements NamespaceAware, PhpElement
         return $this->addMethod($method);
     }
 
-    public function addSetter(string $propertyName, string $prefix = 'set'): PhpMethod
+    public function addSetter(string $propertyName, string $prefix = 'set'): Method
     {
         $property = $this->getProperty($propertyName);
-        $method   = new PhpMethod($prefix . ucfirst($propertyName));
+        $method   = new Method($prefix . ucfirst($propertyName));
         $method->setVisibility(self::VISIBILITY_PUBLIC);
         $param = $method->addParameter($property->getName());
         $param->setTypes($property->getTypes());
@@ -612,7 +612,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
         }
         $method->addBody("\$this->$propertyName = \$$propertyName;");
         $method->addBody('return $this;');
-        $method->addType(PhpType::SELF);
+        $method->addType(Type::SELF);
 
         return $this->addMethod($method);
     }
@@ -620,9 +620,9 @@ final class PhpStruct implements NamespaceAware, PhpElement
     /**
      * @param string[] $initProperties
      */
-    public function addConstructor(array $initProperties = []): PhpMethod
+    public function addConstructor(array $initProperties = []): Method
     {
-        $method = new PhpMethod('__construct');
+        $method = new Method('__construct');
         $this->addMethod($method);
         $method->initProperties($initProperties);
 
@@ -632,11 +632,11 @@ final class PhpStruct implements NamespaceAware, PhpElement
     /**
      * @param string[] $initProperties
      */
-    public function addStaticConstructor(string $name = 'create', array $initProperties = []): PhpMethod
+    public function addStaticConstructor(string $name = 'create', array $initProperties = []): Method
     {
-        $method = new PhpMethod($name);
+        $method = new Method($name);
         $method->setStatic();
-        $method->addType(PhpType::SELF);
+        $method->addType(Type::SELF);
         $this->addMethod($method);
         $method->initProperties($initProperties);
         $method->addBody('return new self();');
@@ -653,22 +653,22 @@ final class PhpStruct implements NamespaceAware, PhpElement
             $name = $name->getQualifiedName();
         }
         $this->validateName($name);
-        $this->implements[$name] = new PhpQualifiedName($name);
+        $this->implements[$name] = new QualifiedName($name);
         $this->implements[$name]->setParent($this);
         $this->implements[$name]->resolve();
 
         return $this;
     }
 
-    public function addMember(PhpMember $member): self
+    public function addMember(Member $member): self
     {
-        if ($member instanceof PhpMethod) {
+        if ($member instanceof Method) {
             $this->addMethod($member);
-        } elseif ($member instanceof PhpProperty) {
+        } elseif ($member instanceof Property) {
             $this->addProperty($member);
-        } elseif ($member instanceof PhpConstant) {
+        } elseif ($member instanceof Constant) {
             $this->addConstant($member);
-        } elseif ($member instanceof PhpTraitUse) {
+        } elseif ($member instanceof TraitUse) {
             $this->addTrait($member);
         }
 
@@ -676,12 +676,12 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @param PhpMethod|string $method
+     * @param Method|string $method
      */
-    public function addMethod($method): PhpMethod
+    public function addMethod($method): Method
     {
-        if (!$method instanceof PhpMethod) {
-            $method = new PhpMethod($method);
+        if (!$method instanceof Method) {
+            $method = new Method($method);
         }
         if ($this->type === self::TYPE_INTERFACE) {
             $method->setBody(null);
@@ -695,12 +695,12 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @param string|PhpProperty $property
+     * @param string|Property $property
      */
-    public function addProperty($property): PhpProperty
+    public function addProperty($property): Property
     {
-        if (!$property instanceof PhpProperty) {
-            $property = new PhpProperty($property);
+        if (!$property instanceof Property) {
+            $property = new Property($property);
         }
         $property->setParent($this);
         $this->properties[$property->getName()] = $property;
@@ -710,15 +710,15 @@ final class PhpStruct implements NamespaceAware, PhpElement
     }
 
     /**
-     * @param string|PhpTraitUse $name
+     * @param string|TraitUse $name
      */
-    public function addTrait($name, array $resolutions = []): PhpTraitUse
+    public function addTrait($name, array $resolutions = []): TraitUse
     {
-        if ($name instanceof PhpTraitUse) {
+        if ($name instanceof TraitUse) {
             $name = $name->getQualifiedName();
         }
         $this->validateName($name);
-        $trait = new PhpTraitUse($name);
+        $trait = new TraitUse($name);
         $trait->setResolutions($resolutions);
         $trait->setParent($this);
         $this->traits[$name] = $trait;
@@ -730,7 +730,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     /**
      * @param string|NamespaceAware $name
      */
-    public function addNamespaceUse($name, ?string $alias = null): PhpNamespaceUse
+    public function addNamespaceUse($name, ?string $alias = null): NamespaceUse
     {
         if ($name instanceof NamespaceAware) {
             $name = $name->getQualifiedName();
@@ -745,7 +745,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
                 "Alias '$alias' used already for '{$this->namespaceUses[$alias]}', cannot use for '{$name}'."
             );
         }
-        $namespaceUse = new PhpNamespaceUse($name, $alias);
+        $namespaceUse = new NamespaceUse($name, $alias);
         $namespaceUse->setParent($this);
         if ($alias) {
             $this->namespaceUses[$alias] = $namespaceUse;

@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Sidux\PhpGenerator\Model\Part;
 
 use Sidux\PhpGenerator\Model\Contract\TypeAware;
-use Sidux\PhpGenerator\Model\PhpValue;
+use Sidux\PhpGenerator\Model\Value;
 
 /**
  * @internal
  */
 trait ValueAwareTrait
 {
-    private ?PhpValue $value = null;
+    private ?Value $value = null;
 
     private bool $initialized = false;
 
@@ -24,7 +24,7 @@ trait ValueAwareTrait
         return $this;
     }
 
-    public function getValue(): ?PhpValue
+    public function getValue(): ?Value
     {
         return $this->value;
     }
@@ -33,8 +33,8 @@ trait ValueAwareTrait
     {
         $literal = $literal || (null === $value);
         $this->setInitialized();
-        if (!$value instanceof PhpValue) {
-            $value = new PhpValue($value, $literal);
+        if (!$value instanceof Value) {
+            $value = new Value($value, $literal);
         }
         $this->value = $value;
         $this->handleValueType();
@@ -52,7 +52,7 @@ trait ValueAwareTrait
         $this->initialized = $initialized;
 
         if (null === $this->value) {
-            $this->value = new PhpValue(null);
+            $this->value = new Value(null);
         }
 
         return $this;

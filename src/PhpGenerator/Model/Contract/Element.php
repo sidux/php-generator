@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sidux\PhpGenerator\Model\Contract;
 
-interface PhpElement
+interface Element
 {
     public function __toString();
 

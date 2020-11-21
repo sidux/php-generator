@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Sidux\PhpGenerator\Model;
 
-use Sidux\PhpGenerator\Model\Contract\PhpElement;
+use Sidux\PhpGenerator\Model\Contract\Element;
 
-class PhpTraitUse extends PhpQualifiedName implements PhpElement
+class TraitUse extends QualifiedName implements Element
 {
     private array $resolutions = [];
 

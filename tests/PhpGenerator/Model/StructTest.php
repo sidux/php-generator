@@ -20,7 +20,7 @@ use Sidux\PhpGenerator\Stub\Class7;
 use Sidux\PhpGenerator\Stub\Interface1;
 use Sidux\PhpGenerator\Stub\Interface2;
 
-final class PhpStructTest extends TestCase
+final class StructTest extends TestCase
 {
 
     /**
@@ -29,14 +29,14 @@ final class PhpStructTest extends TestCase
      */
     public function from(): void
     {
-        $res = PhpStruct::from(ReflectionClass::createFromName(\stdClass::class));
-        Assert::assertInstanceOf(PhpStruct::class, $res);
+        $res = Struct::from(ReflectionClass::createFromName(\stdClass::class));
+        Assert::assertInstanceOf(Struct::class, $res);
         Assert::assertSame('stdClass', $res->getName());
 
 
         Assert::assertException(
             static function () {
-                PhpStruct::from(
+                Struct::from(
                     ReflectionObject::createFromInstance(
                         new class {
                         }
@@ -47,20 +47,20 @@ final class PhpStructTest extends TestCase
         );
 
         $res   = [];
-        $res[] = PhpStruct::from(Interface1::class);
-        $res[] = PhpStruct::from(Interface2::class);
-        $res[] = PhpStruct::from(Class1::class);
-//        $res[]      = PhpStruct::from(new Class2());
+        $res[] = Struct::from(Interface1::class);
+        $res[] = Struct::from(Interface2::class);
+        $res[] = Struct::from(Class1::class);
+//        $res[]      = Struct::from(new Class2());
         $obj = new Class3();
         /**
          * @noinspection PhpUndefinedFieldInspection
          * @phpstan-ignore-next-line
          */
         $obj->prop2 = 1;
-        $res[]      = PhpStruct::from(ReflectionObject::createFromInstance($obj));
-        $res[]      = PhpStruct::from(Class4::class);
-        $res[]      = PhpStruct::from(Class5::class);
-        $res[]      = PhpStruct::from(Class6::class);
+        $res[]      = Struct::from(ReflectionObject::createFromInstance($obj));
+        $res[]      = Struct::from(Class4::class);
+        $res[]      = Struct::from(Class5::class);
+        $res[]      = Struct::from(Class6::class);
 
         Assert::assertStringEqualsFile(__DIR__ . '/../Expected/ClassType.from.expect', implode("\n", $res));
     }
@@ -70,7 +70,7 @@ final class PhpStructTest extends TestCase
      */
     public function all(): void
     {
-        $class = new PhpStruct('Example');
+        $class = new Struct('Example');
 
         Assert::assertFalse($class->isFinal());
         Assert::assertFalse($class->isAbstract());
@@ -98,9 +98,9 @@ final class PhpStructTest extends TestCase
         Assert::assertSame(['ObjectTrait', 'AnotherTrait'], array_keys($class->getTraits()));
         Assert::assertSame(['ObjectTrait' => [], 'AnotherTrait' => ['sayHello as protected']], $class->getTraitResolutions());
         Assert::assertCount(2, $class->getConstants());
-        Assert::assertInstanceOf(PhpConstant::class, $class->getConstants()['ROLE']);
+        Assert::assertInstanceOf(Constant::class, $class->getConstants()['ROLE']);
 
-        $class->addConstant('FORCE_ARRAY', new PhpValue('Sidux\PhpGenerator\Helper\Json::FORCE_ARRAY'))
+        $class->addConstant('FORCE_ARRAY', new Value('Sidux\PhpGenerator\Helper\Json::FORCE_ARRAY'))
               ->setVisibility('private')
               ->addComment('Commented')
         ;
@@ -111,7 +111,7 @@ final class PhpStructTest extends TestCase
         ;
 
         $class->addProperty('order')
-              ->setValue(new PhpValue('RecursiveIteratorIterator::SELF_FIRST'))
+              ->setValue(new Value('RecursiveIteratorIterator::SELF_FIRST'))
         ;
 
         $class->addProperty('typed1')
@@ -138,7 +138,7 @@ final class PhpStructTest extends TestCase
         Assert::assertTrue($class->hasProperty('sections'));
         Assert::assertFalse($class->hasProperty('unknown'));
         Assert::assertTrue($p->isStatic());
-        Assert::assertSame(PhpStruct::VISIBILITY_PRIVATE, $p->getVisibility());
+        Assert::assertSame(Struct::VISIBILITY_PRIVATE, $p->getVisibility());
 
         $m = $class->addMethod('getHandle')
                    ->addComment('Returns file handle.')
@@ -164,7 +164,7 @@ final class PhpStructTest extends TestCase
                    ->addBody('$mode = 123;')
                    ->addBody('return self::$sections;')
         ;
-        $m->addParameter('mode')->setValue(new PhpValue('self::ORDER'));
+        $m->addParameter('mode')->setValue(new Value('self::ORDER'));
 
         Assert::assertFalse($m->isFinal());
         Assert::assertTrue($m->isStatic());
@@ -187,7 +187,7 @@ final class PhpStructTest extends TestCase
                ->setReference(true)
                ->addType('array')
         ;
-        $class->setDefaultPropertyVisibility(PhpStruct::VISIBILITY_PUBLIC);
+        $class->setDefaultPropertyVisibility(Struct::VISIBILITY_PUBLIC);
 
         Assert::assertStringEqualsFile(__DIR__ . '/../Expected/ClassType.expect', (string)$class);
 
@@ -210,7 +210,7 @@ final class PhpStructTest extends TestCase
 
         Assert::assertException(
             static function () {
-                $class = new PhpStruct('A');
+                $class = new Struct('A');
                 $class->addMethod('method')->setVisibility('unknown');
             },
             \InvalidArgumentException::class,
@@ -218,7 +218,7 @@ final class PhpStructTest extends TestCase
         );
 
 
-        $class = new PhpStruct('Example');
+        $class = new Struct('Example');
         $class->addConstant('a', 1);
         $class->addConstant('b', 1);
         $class->removeConstant('b')->removeConstant('c');
@@ -237,7 +237,7 @@ final class PhpStructTest extends TestCase
 
         Assert::assertSame(['a'], array_keys($class->getMethods()));
 
-        Assert::assertStringEqualsFile(__DIR__ . '/../Expected/ClassType.from.74.expect', (string)PhpStruct::from(new Class7()));
+        Assert::assertStringEqualsFile(__DIR__ . '/../Expected/ClassType.from.74.expect', (string)Struct::from(new Class7()));
     }
 
     /**
@@ -247,7 +247,7 @@ final class PhpStructTest extends TestCase
     {
         Assert::assertException(
             static function () {
-                $class = new PhpStruct('A');
+                $class = new Struct('A');
                 $class->setFinal(true)->setAbstract(true);
                 $class->__toString();
             },
@@ -257,7 +257,7 @@ final class PhpStructTest extends TestCase
 
         Assert::assertException(
             static function () {
-                $class = new PhpStruct('A');
+                $class = new Struct('A');
                 $class->setAbstract(true)->setFinal(true);
                 $class->__toString();
             },
@@ -267,26 +267,26 @@ final class PhpStructTest extends TestCase
 
         Assert::assertException(
             static function () {
-                new PhpStruct('');
+                new Struct('');
             },
             \InvalidArgumentException::class
         );
 
         Assert::assertException(
             static function () {
-                new PhpStruct('*');
+                new Struct('*');
             },
             \InvalidArgumentException::class
         );
 
         Assert::assertException(
             static function () {
-                new PhpStruct('abc abc');
+                new Struct('abc abc');
             },
             \InvalidArgumentException::class
         );
 
-        $class = new PhpStruct('Abc');
+        $class = new Struct('Abc');
         Assert::assertException(
             static function () use ($class) {
                 $class->setExtends(['*']);
@@ -349,9 +349,9 @@ final class PhpStructTest extends TestCase
      */
     public function createInterface(): void
     {
-        $interface = PhpStruct::create('IExample')
-                              ->setType('interface')
-                              ->addComment('Description of interface')
+        $interface = Struct::create('IExample')
+                           ->setType('interface')
+                           ->addComment('Description of interface')
         ;
         $interface->addExtend('IOne');
         $interface->addExtend('ITwo');
@@ -370,7 +370,7 @@ final class PhpStructTest extends TestCase
     {
         Assert::assertStringEqualsFile(
             __DIR__ . '/../Expected/ClassType.inheritance.expect',
-            (string)PhpStruct::from(B::class)
+            (string)Struct::from(B::class)
         );
     }
 
@@ -379,7 +379,7 @@ final class PhpStructTest extends TestCase
      */
     public function createClone(): void
     {
-        $class = new PhpStruct('Example');
+        $class = new Struct('Example');
 
         $class->addConstant('A', 10);
         $class->addProperty('a');
@@ -403,22 +403,22 @@ final class PhpStructTest extends TestCase
                  * @noinspection PhpParamsInspection
                  * @phpstan-ignore-next-line
                  */
-                (new PhpStruct('Example'))
+                (new Struct('Example'))
                     ->addMember(new \stdClass());
             },
             \TypeError::class
         );
 
-        $class = PhpStruct::create('Example')
-                          ->addMember(
-                              $method = PhpMethod::create('getHandle')
-                                                 ->addType(Class1::class)
-                          )
-                          ->addMember(
-                              $property = PhpProperty::create('handle')
-                                                     ->addType(\TypeError::class)
-                          )
-                          ->addMember($const = PhpConstant::create('ROLE'))
+        $class = Struct::create('Example')
+                       ->addMember(
+                           $method = Method::create('getHandle')
+                                           ->addType(Class1::class)
+                       )
+                       ->addMember(
+                           $property = Property::create('handle')
+                                               ->addType(\TypeError::class)
+                       )
+                       ->addMember($const = Constant::create('ROLE'))
         ;
 
         Assert::assertSame(['getHandle' => $method], $class->getMethods());
@@ -427,9 +427,9 @@ final class PhpStructTest extends TestCase
         Assert::assertSame('', $method->getBody());
         Assert::assertSame([Class1::class], $class->getNamespaceUsesStrings());
 
-        PhpStruct::create('Example')
-                 ->setType('interface')
-                 ->addMember($method = new PhpMethod('getHandle'))
+        Struct::create('Example')
+              ->setType('interface')
+              ->addMember($method = new Method('getHandle'))
         ;
 
         Assert::assertNull($method->getBody());
@@ -440,11 +440,11 @@ final class PhpStructTest extends TestCase
      */
     public function resolve(): void
     {
-        $class = new PhpStruct('A\\B');
+        $class = new Struct('A\\B');
         $class->addExtend(Class4::class);
         $class->addImplement(Interface1::class);
         $constructor = $class->addConstructor();
-        $constructor->initProperty(PhpProperty::create('toto')->addType(Class5::class));
+        $constructor->initProperty(Property::create('toto')->addType(Class5::class));
         $class->addMethod('execute')
               ->addType(Class2::class)
               ->addParameter('request')

@@ -7,9 +7,9 @@ namespace Sidux\PhpGenerator\Helper;
 use Closure;
 use ReflectionObject;
 use Serializable;
-use Sidux\PhpGenerator\Model\PhpValue;
+use Sidux\PhpGenerator\Model\Value;
 
-final class VarDumper
+final class VarPrinter
 {
     private const INDENT_LENGTH = 4;
 
@@ -28,9 +28,14 @@ final class VarDumper
         return self::dumpVar($var, [], 0, $column);
     }
 
+    public static function setWrapLength(int $wrapLength): void
+    {
+        self::$wrapLength = $wrapLength;
+    }
+
     private static function dumpVar(&$var, array $parents = [], int $level = 0, int $column = 0): string
     {
-        if ($var instanceof PhpValue) {
+        if ($var instanceof Value) {
             return ltrim(StringHelper::indent(trim((string)$var), $level), "\t ");
         }
 

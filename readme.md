@@ -21,7 +21,7 @@ Usage
 Usage is very easy. Let's start with generating class:
 
 ```php
-$class = new Sidux\PhpGenerator\Model\PhpStruct('Demo');
+$class = new Sidux\PhpGenerator\Model\Struct('Demo');
 
 $class
     ->setFinal()

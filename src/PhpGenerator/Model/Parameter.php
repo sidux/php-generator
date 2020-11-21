@@ -6,7 +6,7 @@ namespace Sidux\PhpGenerator\Model;
 
 use Roave\BetterReflection\Reflection\ReflectionParameter;
 use Sidux\PhpGenerator\Helper;
-use Sidux\PhpGenerator\Model\Contract\PhpElement;
+use Sidux\PhpGenerator\Model\Contract\Element;
 use Sidux\PhpGenerator\Model\Contract\TypeAware;
 use Sidux\PhpGenerator\Model\Contract\ValueAware;
 use Sidux\PhpGenerator\Model\Part;
@@ -15,7 +15,7 @@ use Sidux\PhpGenerator\Model\Part;
 /**
  * @method static self from(ReflectionParameter|string|array $from)
  */
-final class PhpParameter implements ValueAware, PhpElement, TypeAware
+final class Parameter implements ValueAware, Element, TypeAware
 {
     use Part\NameAwareTrait;
     use Part\ValueAwareTrait;
@@ -23,19 +23,19 @@ final class PhpParameter implements ValueAware, PhpElement, TypeAware
     use Part\ReferenceAwareTrait;
     use Helper\Traits\MethodOverloadAwareTrait;
 
-    private ?PhpMethod $parent = null;
+    private ?Method $parent = null;
 
     public function __construct(string $name)
     {
         $this->setName($name);
     }
 
-    public function getParent(): ?PhpMethod
+    public function getParent(): ?Method
     {
         return $this->parent;
     }
 
-    public function setParent(?PhpMethod $parent): void
+    public function setParent(?Method $parent): void
     {
         $this->parent = $parent;
     }
@@ -72,7 +72,7 @@ final class PhpParameter implements ValueAware, PhpElement, TypeAware
         $param->addType($ref->getType());
         $param->addTypes($ref->getDocBlockTypes());
         if (!$ref->isVariadic() && ($ref->isOptional() || $ref->isDefaultValueAvailable())) {
-            $param->setValue(new PhpValue($ref->getDefaultValue(), $ref->isDefaultValueConstant()));
+            $param->setValue(new Value($ref->getDefaultValue(), $ref->isDefaultValueConstant()));
         }
 
 

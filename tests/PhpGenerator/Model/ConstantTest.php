@@ -7,33 +7,33 @@ namespace Sidux\PhpGenerator\Model;
 use PHPUnit\Framework\TestCase;
 use Sidux\PhpGenerator\Assert;
 
-class PhpPropertyTest extends TestCase
+class ConstantTest extends TestCase
 {
     /**
      * @test
      */
     public function validate(): void
     {
-        $property = new PhpProperty('Iñtërnâtiônàlizætiøn');
-        Assert::assertSame('Iñtërnâtiônàlizætiøn', $property->getName());
+        $constant = new Constant('Iñtërnâtiônàlizætiøn');
+        Assert::assertSame('Iñtërnâtiônàlizætiøn', $constant->getName());
 
         Assert::assertError(
             static function () {
-                new PhpProperty(null); // @phpstan-ignore-line
+                new Constant(null); // @phpstan-ignore-line
             },
             \TypeError::class
         );
 
         Assert::assertException(
             static function () {
-                new PhpProperty('');
+                new Constant('');
             },
             \InvalidArgumentException::class
         );
 
         Assert::assertException(
             static function () {
-                new PhpProperty('*');
+                new Constant('*');
             },
             \InvalidArgumentException::class
         );

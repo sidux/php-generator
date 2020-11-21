@@ -7,7 +7,7 @@ namespace Sidux\PhpGenerator\Model;
 use PHPUnit\Framework\TestCase;
 use Sidux\PhpGenerator\Assert;
 
-class PhpParameterTest extends TestCase
+class ParameterTest extends TestCase
 {
     public function invalidNames(): iterable
     {
@@ -24,7 +24,7 @@ class PhpParameterTest extends TestCase
     public function validateShouldThrowException(?string $name, string $exception): void
     {
         $this->expectException($exception);
-        new PhpParameter($name);
+        new Parameter($name);
     }
 
     /**
@@ -32,7 +32,7 @@ class PhpParameterTest extends TestCase
      */
     public function validateShouldPass(): void
     {
-        $parameter = new PhpParameter('Iñtërnâtiônàlizætiøn');
+        $parameter = new Parameter('Iñtërnâtiônàlizætiøn');
         Assert::assertSame('Iñtërnâtiônàlizætiøn', $parameter->getName());
     }
 
@@ -41,7 +41,7 @@ class PhpParameterTest extends TestCase
      */
     public function dump(): void
     {
-        $param = PhpParameter::create('toto');
+        $param = Parameter::create('toto');
         Assert::assertSame('$toto', (string)$param);
 
         $param->setValue(null);

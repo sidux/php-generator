@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sidux\PhpGenerator\Model\Contract;
 
-use Sidux\PhpGenerator\Model\PhpValue;
+use Sidux\PhpGenerator\Model\Value;
 
 interface ValueAware
 {
@@ -12,7 +12,7 @@ interface ValueAware
 
     public function removeValue();
 
-    public function getValue(): ?PhpValue;
+    public function getValue(): ?Value;
 
     public function isInitialized(): bool;
 

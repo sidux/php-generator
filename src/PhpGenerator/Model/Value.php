@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Sidux\PhpGenerator\Model;
 
-use Sidux\PhpGenerator\Helper\VarDumper;
+use Sidux\PhpGenerator\Helper\VarPrinter;
 use Sidux\PhpGenerator\Model\Contract\ValueAware;
 
-class PhpValue
+class Value
 {
     private $value;
 
@@ -30,7 +30,7 @@ class PhpValue
             return (string)$this->value;
         }
 
-        return VarDumper::dump($this->value);
+        return VarPrinter::dump($this->value);
     }
 
     public function getParent(): ?ValueAware

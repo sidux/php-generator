@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Sidux\PhpGenerator\Model;
 
-use Sidux\PhpGenerator\Model\Contract\PhpMember;
+use Sidux\PhpGenerator\Model\Contract\Member;
 use Sidux\PhpGenerator\Model\Contract\ValueAware;
 use Sidux\PhpGenerator\Model\Part;
 
-class PhpConstant extends PhpMember implements ValueAware
+class Constant extends Member implements ValueAware
 {
     use Part\NamespaceAwareTrait;
     use Part\VisibilityAwareTrait;
     use Part\CommentAwareTrait;
     use Part\ValueAwareTrait;
 
-    public const DEFAULT_VISIBILITY = PhpStruct::VISIBILITY_PUBLIC;
+    public const DEFAULT_VISIBILITY = Struct::VISIBILITY_PUBLIC;
 
     public static function create(...$args): self
     {
@@ -38,7 +38,7 @@ class PhpConstant extends PhpMember implements ValueAware
     }
 
     /**
-     * @psalm-return value-of<PhpStruct::VISIBILITIES>
+     * @psalm-return value-of<Struct::VISIBILITIES>
      */
     public function getDefaultVisibility(): string
     {

@@ -8,15 +8,15 @@ use Roave\BetterReflection\Reflection\ReflectionFunction;
 use Roave\BetterReflection\Reflection\ReflectionMethod;
 use Sidux\PhpGenerator\Helper;
 use Sidux\PhpGenerator\Helper\StringHelper;
-use Sidux\PhpGenerator\Model\Contract\PhpElement;
-use Sidux\PhpGenerator\Model\Contract\PhpMember;
+use Sidux\PhpGenerator\Model\Contract\Element;
+use Sidux\PhpGenerator\Model\Contract\Member;
 use Sidux\PhpGenerator\Model\Contract\TypeAware;
 use Sidux\PhpGenerator\Model\Part;
 
 /**
  * @method static self from(ReflectionMethod|ReflectionFunction|string|array $from)
  */
-final class PhpMethod extends PhpMember implements PhpElement, TypeAware
+final class Method extends Member implements Element, TypeAware
 {
     use Part\AbstractAwareTrait;
     use Part\CommentAwareTrait;
@@ -28,12 +28,12 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
     use Part\StaticAwareTrait;
     use Helper\Traits\MethodOverloadAwareTrait;
 
-    public const DEFAULT_VISIBILITY = PhpStruct::VISIBILITY_PUBLIC;
+    public const DEFAULT_VISIBILITY = Struct::VISIBILITY_PUBLIC;
 
     private ?string $body = '';
 
     /**
-     * @var array<string, PhpParameter>
+     * @var array<string, Parameter>
      */
     private array $parameters = [];
 
@@ -82,7 +82,7 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
     public static function fromReflectionFunction(ReflectionFunction $ref): self
     {
         $method = new self($ref->getName());
-        $method->setParameters(array_map(PhpParameter::class . '::from', $ref->getParameters()));
+        $method->setParameters(array_map(Parameter::class . '::from', $ref->getParameters()));
         $method->setVariadic($ref->isVariadic());
         $method->setBody($ref->getBodyCode());
         $method->setReference($ref->returnsReference());
@@ -98,19 +98,19 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
     public static function fromReflectionMethod(ReflectionMethod $ref): self
     {
         $method = new self($ref->getName());
-        $method->setParameters(array_map(PhpParameter::class . '::from', $ref->getParameters()));
+        $method->setParameters(array_map(Parameter::class . '::from', $ref->getParameters()));
         $method->setStatic($ref->isStatic());
         $method->setVariadic($ref->isVariadic());
         $isInterface = $ref->getDeclaringClass()->isInterface();
 
         if ($isInterface) {
-            $method->setVisibility(PhpStruct::VISIBILITY_PUBLIC);
+            $method->setVisibility(Struct::VISIBILITY_PUBLIC);
         } elseif ($ref->isPrivate()) {
-            $method->setVisibility(PhpStruct::VISIBILITY_PRIVATE);
+            $method->setVisibility(Struct::VISIBILITY_PRIVATE);
         } elseif ($ref->isProtected()) {
-            $method->setVisibility(PhpStruct::VISIBILITY_PROTECTED);
+            $method->setVisibility(Struct::VISIBILITY_PROTECTED);
         } else {
-            $method->setVisibility(PhpStruct::VISIBILITY_PUBLIC);
+            $method->setVisibility(Struct::VISIBILITY_PUBLIC);
         }
 
         $method->setFinal($ref->isFinal());
@@ -149,7 +149,7 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
 
     public function validate(): self
     {
-        if ($this->abstract && ($this->final || $this->visibility === PhpStruct::VISIBILITY_PRIVATE)) {
+        if ($this->abstract && ($this->final || $this->visibility === Struct::VISIBILITY_PRIVATE)) {
             throw new \DomainException('Cannot be abstract and final or private.');
         }
 
@@ -171,7 +171,7 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
 
         $parent = $this->getParent();
         if ($parent) {
-            return $parent->getType() !== PhpStruct::TYPE_INTERFACE;
+            return $parent->getType() !== Struct::TYPE_INTERFACE;
         }
 
         return true;
@@ -190,7 +190,7 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
     }
 
     /**
-     * @return array<string, PhpParameter>|\ArrayAccess
+     * @return array<string, Parameter>|\ArrayAccess
      */
     public function getParameters(): array
     {
@@ -198,7 +198,7 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
     }
 
     /**
-     * @param array<string, PhpParameter>|\ArrayAccess $parameters
+     * @param array<string, Parameter>|\ArrayAccess $parameters
      */
     public function setParameters(array $parameters): self
     {
@@ -228,7 +228,7 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
         return $this;
     }
 
-    public function addMember(PhpParameter $parameter): self
+    public function addMember(Parameter $parameter): self
     {
         $this->addParameter($parameter);
 
@@ -236,14 +236,14 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
     }
 
     /**
-     * @param PhpParameter|string $parameter
+     * @param Parameter|string $parameter
      *
-     * @return PhpParameter
+     * @return Parameter
      */
-    public function addParameter($parameter): PhpParameter
+    public function addParameter($parameter): Parameter
     {
-        if (!$parameter instanceof PhpParameter) {
-            $parameter = new PhpParameter($parameter);
+        if (!$parameter instanceof Parameter) {
+            $parameter = new Parameter($parameter);
         }
         $parameter->setParent($this);
         $this->parameters[$parameter->getName()] = $parameter;
@@ -252,7 +252,7 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
     }
 
     /**
-     * @psalm-return value-of<PhpStruct::VISIBILITIES>
+     * @psalm-return value-of<Struct::VISIBILITIES>
      */
     public function getDefaultVisibility(): string
     {
@@ -260,7 +260,7 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
     }
 
     /**
-     * @param string|PhpProperty $initProperty
+     * @param string|Property $initProperty
      */
     public function initProperty($initProperty): self
     {
@@ -285,7 +285,7 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
     }
 
     /**
-     * @param string[]|PhpProperty[] $initProperties
+     * @param string[]|Property[] $initProperties
      */
     public function initProperties(array $initProperties): self
     {

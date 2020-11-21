@@ -14,7 +14,7 @@ use Sidux\PhpGenerator\Stub\InterfaceStub1;
 use Sidux\PhpGenerator\Stub\SubNamespace\Foo;
 use Sidux\PhpGenerator\Stub\Variadics;
 
-final class PhpMethodTest extends TestCase
+final class MethodTest extends TestCase
 {
 
     /**
@@ -23,17 +23,17 @@ final class PhpMethodTest extends TestCase
      */
     public function from(): void
     {
-        $res = PhpMethod::from(ReflectionMethod::createFromName(self::class, 'from'));
-        Assert::assertInstanceOf(PhpMethod::class, $res);
+        $res = Method::from(ReflectionMethod::createFromName(self::class, 'from'));
+        Assert::assertInstanceOf(Method::class, $res);
         Assert::assertSame('from', $res->getName());
 
-        $res = PhpMethod::from(ReflectionFunction::createFromName('trim'));
-        Assert::assertInstanceOf(PhpMethod::class, $res);
+        $res = Method::from(ReflectionFunction::createFromName('trim'));
+        Assert::assertInstanceOf(Method::class, $res);
         Assert::assertSame('trim', $res->getName());
 
         Assert::assertException(
             static function () {
-                PhpMethod::from(
+                Method::from(
                     ReflectionFunction::createFromClosure(
                         static function () {
                         }
@@ -51,7 +51,7 @@ final class PhpMethodTest extends TestCase
     {
         Assert::assertException(
             static function () {
-                PhpMethod::create('foo')
+                Method::create('foo')
                          ->setFinal()
                          ->setAbstract()
                          ->validate()
@@ -62,49 +62,49 @@ final class PhpMethodTest extends TestCase
 
         Assert::assertException(
             static function () {
-                PhpMethod::create('foo')
-                         ->setAbstract(true)
-                         ->setVisibility(PhpStruct::VISIBILITY_PRIVATE)
-                         ->validate()
+                Method::create('foo')
+                      ->setAbstract(true)
+                      ->setVisibility(Struct::VISIBILITY_PRIVATE)
+                      ->validate()
                 ;
             },
             \DomainException::class
         );
 
-        $method = new PhpMethod('Iñtërnâtiônàlizætiøn');
+        $method = new Method('Iñtërnâtiônàlizætiøn');
         Assert::assertSame('Iñtërnâtiônàlizætiøn', $method->getName());
 
         Assert::assertException(
             static function () {
-                new PhpMethod('');
+                new Method('');
             },
             \InvalidArgumentException::class
         );
 
         Assert::assertError(
             static function () {
-                new PhpMethod(null); // @phpstan-ignore-line
+                new Method(null); // @phpstan-ignore-line
             },
             \TypeError::class
         );
 
         Assert::assertException(
             static function () {
-                new PhpMethod('');
+                new Method('');
             },
             \InvalidArgumentException::class
         );
 
         Assert::assertException(
             static function () {
-                new PhpMethod('*');
+                new Method('*');
             },
             \InvalidArgumentException::class
         );
 
         Assert::assertException(
             static function () {
-                PhpMethod::from('foo::bar::toto');
+                Method::from('foo::bar::toto');
             },
             \InvalidArgumentException::class
         );
@@ -115,14 +115,14 @@ final class PhpMethodTest extends TestCase
      */
     public function scalarParameters(): void
     {
-        $method = PhpMethod::from(InterfaceStub1::class . '::scalars');
+        $method = Method::from(InterfaceStub1::class . '::scalars');
         Assert::assertSame('string', (string)$method->getParameters()['a']->getTypeHint());
         Assert::assertSame('bool', (string)$method->getParameters()['b']->getTypeHint());
         Assert::assertSame('int', (string)$method->getParameters()['c']->getTypeHint());
         Assert::assertSame('float', (string)$method->getParameters()['d']->getTypeHint());
 
-        $method = PhpMethod::create('functionStub3')
-                           ->setBody('return null;')
+        $method = Method::create('functionStub3')
+                        ->setBody('return null;')
         ;
 
         $method->addParameter('a')->addType('string');
@@ -139,17 +139,17 @@ final class PhpMethodTest extends TestCase
      */
     public function variadics(): void
     {
-        $method = PhpMethod::from(Variadics::class . '::foo');
+        $method = Method::from(Variadics::class . '::foo');
         Assert::assertTrue($method->isVariadic());
 
-        $method = PhpMethod::from(Variadics::class . '::bar');
+        $method = Method::from(Variadics::class . '::bar');
         Assert::assertTrue($method->isVariadic());
         Assert::assertTrue($method->getParameters()['bar']->isReference());
         Assert::assertSame('array', (string)$method->getParameters()['bar']->getTypeHint());
 
-        $method = PhpMethod::create('variadic')
-                           ->setVariadic(true)
-                           ->setBody('return 42;')
+        $method = Method::create('variadic')
+                        ->setVariadic(true)
+                        ->setBody('return 42;')
         ;
 
         Assert::assertSame(
@@ -162,9 +162,9 @@ final class PhpMethodTest extends TestCase
         );
 
 
-        $method = PhpMethod::create('variadic')
-                           ->setVariadic(true)
-                           ->setBody('return 42;')
+        $method = Method::create('variadic')
+                        ->setVariadic(true)
+                        ->setBody('return 42;')
         ;
         $method->addParameter('foo');
 
@@ -178,9 +178,9 @@ final class PhpMethodTest extends TestCase
         );
 
 
-        $method = PhpMethod::create('variadic')
-                           ->setVariadic(true)
-                           ->setBody('return 42;')
+        $method = Method::create('variadic')
+                        ->setVariadic(true)
+                        ->setBody('return 42;')
         ;
         $method->addParameter('foo');
         $method->addParameter('bar');
@@ -196,9 +196,9 @@ final class PhpMethodTest extends TestCase
         );
 
 
-        $method = PhpMethod::create('variadic')
-                           ->setVariadic(true)
-                           ->setBody('return 42;')
+        $method = Method::create('variadic')
+                        ->setVariadic(true)
+                        ->setBody('return 42;')
         ;
         $method->addParameter('foo')->addType('array');
 
@@ -212,9 +212,9 @@ final class PhpMethodTest extends TestCase
         );
 
 
-        $method = PhpMethod::create('variadic')
-                           ->setVariadic(true)
-                           ->setBody('return 42;')
+        $method = Method::create('variadic')
+                        ->setVariadic(true)
+                        ->setBody('return 42;')
         ;
         $method->addParameter('foo')->addType('array')->setReference(true);
 
@@ -233,15 +233,15 @@ final class PhpMethodTest extends TestCase
      */
     public function returnTypes(): void
     {
-        $method = PhpMethod::from(D::class . '::testClass');
+        $method = Method::from(D::class . '::testClass');
         Assert::assertSame(Foo::class, (string)$method->getTypeHint());
 
-        $method = PhpMethod::from(D::class . '::testScalar');
+        $method = Method::from(D::class . '::testScalar');
         Assert::assertSame('string', (string)$method->getTypeHint());
 
-        $method = PhpMethod::create('create')
-                           ->addType('Foo')
-                           ->setBody('return new Foo();')
+        $method = Method::create('create')
+                        ->addType('Foo')
+                        ->setBody('return new Foo();')
         ;
 
         Assert::assertSame(
@@ -260,7 +260,7 @@ final class PhpMethodTest extends TestCase
     public function fromName(): void
     {
         $content  = StubHelper::load('functionStub1');
-        $function = PhpMethod::from('functionStub1');
+        $function = Method::from('functionStub1');
         Assert::assertSame($content, (string)$function);
 
     }
