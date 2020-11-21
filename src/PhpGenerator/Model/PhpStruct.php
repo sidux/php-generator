@@ -92,7 +92,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     /**
      * @var array<string, PhpNamespaceUse>
      */
-    private array $uses = [];
+    private array $namespaceUses = [];
 
     /**
      * @psalm-var value-of<PhpStruct::VISIBILITIES>
@@ -115,11 +115,11 @@ final class PhpStruct implements NamespaceAware, PhpElement
             return clone $item;
         };
 
-        $this->uses       = array_map($clone, $this->uses);
-        $this->traits     = array_map($clone, $this->traits);
-        $this->consts     = array_map($clone, $this->consts);
-        $this->properties = array_map($clone, $this->properties);
-        $this->methods    = array_map($clone, $this->methods);
+        $this->namespaceUses = array_map($clone, $this->namespaceUses);
+        $this->traits        = array_map($clone, $this->traits);
+        $this->consts        = array_map($clone, $this->consts);
+        $this->properties    = array_map($clone, $this->properties);
+        $this->methods       = array_map($clone, $this->methods);
     }
 
     public function __toString(): string
@@ -512,9 +512,17 @@ final class PhpStruct implements NamespaceAware, PhpElement
     /**
      * @return array<string, PhpNamespaceUse>
      */
-    public function getUses(): array
+    public function getNamespaceUses(): array
     {
-        return $this->uses;
+        return $this->namespaceUses;
+    }
+
+    /**
+     * @return array<string, PhpNamespaceUse>
+     */
+    public function getNamespaceUsesStrings(): array
+    {
+        return array_map(static fn(PhpNamespaceUse $namespace) => (string)$namespace->getQualifiedName(), $this->namespaceUses);
     }
 
     /**
@@ -573,6 +581,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
         $this->validateName($name);
         $this->extends[$name] = new PhpQualifiedName($name);
         $this->extends[$name]->setParent($this);
+        $this->extends[$name]->resolve();
 
         return $this->extends[$name];
     }
@@ -677,8 +686,8 @@ final class PhpStruct implements NamespaceAware, PhpElement
             $method->setVisibility(self::VISIBILITY_PUBLIC);
         }
         $method->setParent($this);
-
         $this->methods[$method->getName()] = $method;
+        $method->resolve();
 
         return $this->methods[$method->getName()];
     }
@@ -692,8 +701,8 @@ final class PhpStruct implements NamespaceAware, PhpElement
             $property = new PhpProperty($property);
         }
         $property->setParent($this);
-
         $this->properties[$property->getName()] = $property;
+        $property->resolve();
 
         return $this->properties[$property->getName()];
     }
@@ -711,6 +720,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
         $trait->setResolutions($resolutions);
         $trait->setParent($this);
         $this->traits[$name] = $trait;
+        $trait->resolve();
 
         return $this->traits[$name];
     }
@@ -728,29 +738,21 @@ final class PhpStruct implements NamespaceAware, PhpElement
         if (null === $alias && $this->name === PhpHelper::extractNamespace($name)) {
             $alias = PhpHelper::extractShortName($name);
         }
-        if (null === $alias) {
-            $path  = explode('\\', $name);
-            $count = 0;
-            do {
-                if (empty($path)) {
-                    $count++;
-                } else {
-                    $alias = array_pop($path) . (string)$alias;
-                }
-                $index = $alias . $count;
-            } while (isset($this->uses[$index]) && (string)$this->uses[$index] !== $name);
-            $alias .= $count;
-        } elseif (isset($this->uses[$alias]) && (string)$this->uses[$alias] !== $name) {
+        if (isset($this->namespaceUses[$alias]) && (string)$this->namespaceUses[$alias] !== $name) {
             throw new \DomainException(
-                "Alias '$alias' used already for '{$this->uses[$alias]}', cannot use for '{$name}'."
+                "Alias '$alias' used already for '{$this->namespaceUses[$alias]}', cannot use for '{$name}'."
             );
         }
+        $namespaceUse = new PhpNamespaceUse($name, $alias);
+        $namespaceUse->setParent($this);
+        if ($alias) {
+            $this->namespaceUses[$alias] = $namespaceUse;
+        } else {
+            $this->namespaceUses[] = $namespaceUse;
+        }
+        asort($this->namespaceUses);
 
-        $this->uses[$alias] = new PhpNamespaceUse($name, $alias);
-        $this->uses[$alias]->setParent($this);
-        asort($this->uses);
-
-        return $this->uses[$alias];
+        return $namespaceUse;
     }
 
     /**

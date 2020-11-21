@@ -408,18 +408,23 @@ final class PhpStructTest extends TestCase
             \TypeError::class
         );
 
-
         $class = PhpStruct::create('Example')
-                          ->addMember($method = new PhpMethod('getHandle'))
-                          ->addMember($property = new PhpProperty('handle'))
-                          ->addMember($const = new PhpConstant('ROLE'))
+                          ->addMember(
+                              $method = PhpMethod::create('getHandle')
+                                                 ->addType(Class1::class)
+                          )
+                          ->addMember(
+                              $property = PhpProperty::create('handle')
+                                                     ->addType(\TypeError::class)
+                          )
+                          ->addMember($const = PhpConstant::create('ROLE'))
         ;
 
         Assert::assertSame(['getHandle' => $method], $class->getMethods());
         Assert::assertSame(['handle' => $property], $class->getProperties());
         Assert::assertSame(['ROLE' => $const], $class->getConstants());
         Assert::assertSame('', $method->getBody());
-
+        Assert::assertSame([Class1::class], $class->getNamespaceUsesStrings());
 
         PhpStruct::create('Example')
                  ->setType('interface')

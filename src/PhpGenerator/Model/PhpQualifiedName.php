@@ -18,10 +18,6 @@ class PhpQualifiedName extends PhpMember implements NamespaceAware
     {
         $this->setQualifiedName($qualifiedName);
         $this->setAlias($alias);
-        $parent = $this->getParent();
-        if ($parent && $parent->hasResolveTypes()) {
-            $parent->addNamespaceUse($qualifiedName, $alias);
-        }
     }
 
     public function __toString(): string
@@ -55,6 +51,16 @@ class PhpQualifiedName extends PhpMember implements NamespaceAware
         }
 
         return $parent->hasResolveTypes();
+    }
+
+    public function resolve(): self
+    {
+        $struct = $this->getParent();
+        if ($struct && $this->isResolved()) {
+            $struct->addNamespaceUse($this);
+        }
+
+        return $this;
     }
 
     public function setAlias(?string $alias): void

@@ -67,7 +67,7 @@ trait TypeAwareTrait
     }
 
     /**
-     * @return array<string, PhpType>
+     * @return array<string, PhpType>|\ArrayAccess
      */
     public function getTypes(): array
     {
@@ -112,10 +112,6 @@ trait TypeAwareTrait
         }
         if ($this instanceof TypeAware) {
             $type->setParent($this);
-        }
-        $struct = $type->getStructParent();
-        if ($struct && $type->isResolved()) {
-            $struct->addNamespaceUse($type);
         }
         $this->types[(string)$type] = $type;
 

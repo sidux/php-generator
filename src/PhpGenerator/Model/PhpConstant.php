@@ -17,6 +17,11 @@ class PhpConstant extends PhpMember implements ValueAware
 
     public const DEFAULT_VISIBILITY = PhpStruct::VISIBILITY_PUBLIC;
 
+    public static function create(...$args): self
+    {
+        return new self(...$args);
+    }
+
     public function __toString(): string
     {
         $output = '';
@@ -25,7 +30,7 @@ class PhpConstant extends PhpMember implements ValueAware
         $output .= 'const ';
         $output .= $this->getName();
         $output .= ' = ';
-        $output .= $this->getValue();
+        $output .= (string)($this->getValue() ?? 'null');
         $output .= ';';
         $output .= "\n";
 

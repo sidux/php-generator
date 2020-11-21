@@ -99,4 +99,13 @@ final class PhpParameter implements ValueAware, PhpElement, TypeAware
 
         return false;
     }
+
+    public function resolve(): self
+    {
+        foreach ($this->getTypes() as $type) {
+            $type->resolve();
+        }
+
+        return $this;
+    }
 }

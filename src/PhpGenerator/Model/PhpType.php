@@ -81,25 +81,6 @@ class PhpType implements PhpElement, NamespaceAware
         $this->setQualifiedName($type);
     }
 
-    public function getStructParent(): ?PhpStruct
-    {
-        $parent = $this->getParent();
-        while ($parent
-            && method_exists($parent, 'getParent')) {
-            $parent = $parent->getParent();
-        }
-
-        if (!$parent) {
-            return null;
-        }
-
-        if (!$parent instanceof PhpStruct) {
-            return null;
-        }
-
-        return $parent;
-    }
-
     public function __toString(): string
     {
         $qualifiedName = $this->getQualifiedName();
@@ -162,6 +143,25 @@ class PhpType implements PhpElement, NamespaceAware
         return null;
     }
 
+    public function getStructParent(): ?PhpStruct
+    {
+        $parent = $this->getParent();
+        while ($parent
+            && method_exists($parent, 'getParent')) {
+            $parent = $parent->getParent();
+        }
+
+        if (!$parent) {
+            return null;
+        }
+
+        if (!$parent instanceof PhpStruct) {
+            return null;
+        }
+
+        return $parent;
+    }
+
     public function isResolved(): bool
     {
         $parent = $this->getStructParent();
@@ -213,5 +213,15 @@ class PhpType implements PhpElement, NamespaceAware
     public function getName(): string
     {
         return $this->__toString();
+    }
+
+    public function resolve(): self
+    {
+        $struct = $this->getStructParent();
+        if ($struct && $this->isResolved()) {
+            $struct->addNamespaceUse($this);
+        }
+
+        return $this;
     }
 }

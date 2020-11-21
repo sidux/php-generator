@@ -190,7 +190,7 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
     }
 
     /**
-     * @return PhpParameter[]
+     * @return array<string, PhpParameter>|\ArrayAccess
      */
     public function getParameters(): array
     {
@@ -198,7 +198,7 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
     }
 
     /**
-     * @param PhpParameter[] $parameters
+     * @param array<string, PhpParameter>|\ArrayAccess $parameters
      */
     public function setParameters(array $parameters): self
     {
@@ -284,6 +284,18 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
     {
         foreach ($initProperties as $initProperty) {
             $this->initProperty($initProperty);
+        }
+
+        return $this;
+    }
+
+    public function resolve(): self
+    {
+        foreach ($this->getTypes() as $type) {
+            $type->resolve();
+        }
+        foreach ($this->getParameters() as $parameter) {
+            $parameter->resolve();
         }
 
         return $this;

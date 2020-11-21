@@ -42,6 +42,11 @@ final class PhpProperty extends PhpMember implements ValueAware, PhpElement, Typ
         return $output;
     }
 
+    public static function create(...$args): self
+    {
+        return new self(...$args);
+    }
+
     public static function fromArray(array $from): self
     {
         $ref = ReflectionProperty::createFromInstance($from[0], $from[1]);
@@ -105,5 +110,14 @@ final class PhpProperty extends PhpMember implements ValueAware, PhpElement, Typ
     public function getDefaultVisibility(): string
     {
         return $this->getParent() ? $this->getParent()->getDefaultPropertyVisibility() : self::DEFAULT_VISIBILITY;
+    }
+
+    public function resolve(): self
+    {
+        foreach ($this->getTypes() as $type) {
+            $type->resolve();
+        }
+
+        return $this;
     }
 }
