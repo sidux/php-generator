@@ -40,9 +40,9 @@ final class Parameter implements ValueAware, Element, TypeAware
         $this->parent = $parent;
     }
 
-    public static function create(...$args): self
+    public static function create(string $name): self
     {
-        return new self(...$args);
+        return new self($name);
     }
 
     public function __toString(): string

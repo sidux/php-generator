@@ -79,7 +79,7 @@ final class StructTest extends TestCase
         Assert::assertSame([], $class->getTraitResolutions());
 
         $class
-            ->setAbstract(true)
+            ->setAbstract()
             ->setTraits(['ObjectTrait'])
             ->addTrait('AnotherTrait', ['sayHello as protected'])
         ;
@@ -125,7 +125,7 @@ final class StructTest extends TestCase
 
         $p = $class->addProperty('sections')
                    ->setValue(['first' => true])
-                   ->setStatic(true)
+                   ->setStatic()
         ;
 
         $class->addConstructor(['typed2']);
@@ -138,12 +138,12 @@ final class StructTest extends TestCase
         Assert::assertTrue($class->hasProperty('sections'));
         Assert::assertFalse($class->hasProperty('unknown'));
         Assert::assertTrue($p->isStatic());
-        Assert::assertSame(Struct::VISIBILITY_PRIVATE, $p->getVisibility());
+        Assert::assertSame(Struct::PRIVATE, $p->getVisibility());
 
         $m = $class->addMethod('getHandle')
                    ->addComment('Returns file handle.')
                    ->addComment('@return resource')
-                   ->setFinal(true)
+                   ->setFinal()
                    ->setBody('return $this->handle;')
         ;
 
@@ -158,9 +158,9 @@ final class StructTest extends TestCase
         Assert::assertSame('return $this->handle;', $m->getBody());
 
         $m = $class->addMethod('getSections')
-                   ->setStatic(true)
+                   ->setStatic()
                    ->setVisibility('protected')
-                   ->setReference(true)
+                   ->setReference()
                    ->addBody('$mode = 123;')
                    ->addBody('return self::$sections;')
         ;
@@ -174,7 +174,7 @@ final class StructTest extends TestCase
         Assert::assertSame('protected', $m->getVisibility());
 
         $method = $class->addMethod('show')
-                        ->setAbstract(true)
+                        ->setAbstract()
         ;
 
         $method->addParameter('foo');
@@ -184,10 +184,10 @@ final class StructTest extends TestCase
 
         $method->addParameter('res')
                ->setValue(null)
-               ->setReference(true)
+               ->setReference()
                ->addType('array')
         ;
-        $class->setDefaultPropertyVisibility(Struct::VISIBILITY_PUBLIC);
+        $class->setDefaultPropertyVisibility(Struct::PUBLIC);
 
         Assert::assertStringEqualsFile(__DIR__ . '/../Expected/ClassType.expect', (string)$class);
 
@@ -248,7 +248,7 @@ final class StructTest extends TestCase
         Assert::assertException(
             static function () {
                 $class = new Struct('A');
-                $class->setFinal(true)->setAbstract(true);
+                $class->setFinal()->setAbstract();
                 $class->__toString();
             },
             \DomainException::class,
@@ -258,7 +258,7 @@ final class StructTest extends TestCase
         Assert::assertException(
             static function () {
                 $class = new Struct('A');
-                $class->setAbstract(true)->setFinal(true);
+                $class->setAbstract()->setFinal();
                 $class->__toString();
             },
             \DomainException::class,

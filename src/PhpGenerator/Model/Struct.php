@@ -29,26 +29,26 @@ final class Struct implements NamespaceAware, Element
     use Helper\Traits\MethodOverloadAwareTrait;
 
     public const TYPES = [
-        Struct::TYPE_CLASS,
-        Struct::TYPE_INTERFACE,
-        Struct::TYPE_TRAIT,
+        Struct::_CLASS,
+        Struct::_INTERFACE,
+        Struct::_TRAIT,
     ];
 
     public const
-        TYPE_CLASS = 'class',
-        TYPE_INTERFACE = 'interface',
-        TYPE_TRAIT = 'trait';
+        _CLASS = 'class',
+        _INTERFACE = 'interface',
+        _TRAIT = 'trait';
 
     public const VISIBILITIES = [
-        Struct::VISIBILITY_PUBLIC,
-        Struct::VISIBILITY_PROTECTED,
-        Struct::VISIBILITY_PRIVATE,
+        Struct::PUBLIC,
+        Struct::PROTECTED,
+        Struct::PRIVATE,
     ];
 
     public const
-        VISIBILITY_PUBLIC = 'public',
-        VISIBILITY_PROTECTED = 'protected',
-        VISIBILITY_PRIVATE = 'private';
+        PUBLIC = 'public',
+        PROTECTED = 'protected',
+        PRIVATE = 'private';
 
     /**
      * @var array<string, Constant>
@@ -87,7 +87,7 @@ final class Struct implements NamespaceAware, Element
     /**
      * @psalm-var value-of<Struct::TYPES>
      */
-    private string $type = self::TYPE_CLASS;
+    private string $type = self::_CLASS;
 
     /**
      * @var array<string, NamespaceUse>
@@ -191,14 +191,14 @@ final class Struct implements NamespaceAware, Element
         $class->setComment($from->getDocComment());
 
         if ($from->isTrait()) {
-            $class->setType(self::TYPE_TRAIT);
+            $class->setType(self::_TRAIT);
         } elseif ($from->isInterface()) {
-            $class->setType(self::TYPE_INTERFACE);
+            $class->setType(self::_INTERFACE);
         } else {
-            $class->setType($class::TYPE_CLASS);
+            $class->setType($class::_CLASS);
         }
-        $class->setFinal($from->isFinal() && $class->getType() === $class::TYPE_CLASS);
-        $class->setAbstract($from->isAbstract() && $class->getType() === $class::TYPE_CLASS);
+        $class->setFinal($from->isFinal() && $class->getType() === $class::_CLASS);
+        $class->setAbstract($from->isAbstract() && $class->getType() === $class::_CLASS);
 
         $interfaces = [];
         //bug fix getImmediateInterfaces should not return parent interfaces
@@ -313,12 +313,12 @@ final class Struct implements NamespaceAware, Element
     }
 
     /**
-     * @param string[]|NamespaceAware[] $names
+     * @param string[]|NamespaceAware[] $parents
      */
-    public function setExtends(array $names): self
+    public function setExtends(array $parents): self
     {
-        foreach ($names as $name) {
-            $this->addExtend($name);
+        foreach ($parents as $parent) {
+            $this->addExtend($parent);
         }
 
         return $this;
@@ -572,17 +572,17 @@ final class Struct implements NamespaceAware, Element
     }
 
     /**
-     * @param string|NamespaceAware $name
+     * @param string|NamespaceAware $parent
      */
-    public function addExtend($name): self
+    public function addExtend($parent): self
     {
-        if ($name instanceof NamespaceAware) {
-            $name = $name->getQualifiedName();
+        if ($parent instanceof NamespaceAware) {
+            $parent = $parent->getQualifiedName();
         }
-        $this->validateName($name);
-        $this->extends[$name] = new QualifiedName($name);
-        $this->extends[$name]->setParent($this);
-        $this->extends[$name]->resolve();
+        $this->validateName($parent);
+        $this->extends[$parent] = new QualifiedName($parent);
+        $this->extends[$parent]->setParent($this);
+        $this->extends[$parent]->resolve();
 
         return $this;
     }
@@ -592,7 +592,7 @@ final class Struct implements NamespaceAware, Element
         $property = $this->getProperty($propertyName);
         $prefix   ??= $property->getTypeHint() === Type::BOOL ? 'is' : 'get';
         $method   = new Method($prefix . ucfirst($propertyName));
-        $method->setVisibility(self::VISIBILITY_PUBLIC);
+        $method->setVisibility(self::PUBLIC);
         $method->addBody("return \$this->$propertyName;");
         $method->setTypes($property->getTypes());
 
@@ -603,7 +603,7 @@ final class Struct implements NamespaceAware, Element
     {
         $property = $this->getProperty($propertyName);
         $method   = new Method($prefix . ucfirst($propertyName));
-        $method->setVisibility(self::VISIBILITY_PUBLIC);
+        $method->setVisibility(self::PUBLIC);
         $param = $method->addParameter($property->getName());
         $param->setTypes($property->getTypes());
         $value = $property->getValue();
@@ -645,17 +645,17 @@ final class Struct implements NamespaceAware, Element
     }
 
     /**
-     * @param string|NamespaceAware $name
+     * @param string|NamespaceAware $interface
      */
-    public function addImplement($name): self
+    public function addImplement($interface): self
     {
-        if ($name instanceof NamespaceAware) {
-            $name = $name->getQualifiedName();
+        if ($interface instanceof NamespaceAware) {
+            $interface = $interface->getQualifiedName();
         }
-        $this->validateName($name);
-        $this->implements[$name] = new QualifiedName($name);
-        $this->implements[$name]->setParent($this);
-        $this->implements[$name]->resolve();
+        $this->validateName($interface);
+        $this->implements[$interface] = new QualifiedName($interface);
+        $this->implements[$interface]->setParent($this);
+        $this->implements[$interface]->resolve();
 
         return $this;
     }
@@ -692,9 +692,9 @@ final class Struct implements NamespaceAware, Element
         if (!$method instanceof Method) {
             $method = new Method($method);
         }
-        if ($this->type === self::TYPE_INTERFACE) {
+        if ($this->type === self::_INTERFACE) {
             $method->setBody(null);
-            $method->setVisibility(self::VISIBILITY_PUBLIC);
+            $method->setVisibility(self::PUBLIC);
         }
         $method->setParent($this);
         $this->methods[$method->getName()] = $method;

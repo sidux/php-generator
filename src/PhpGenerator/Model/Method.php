@@ -28,7 +28,7 @@ final class Method extends Member implements Element, TypeAware
     use Part\StaticAwareTrait;
     use Helper\Traits\MethodOverloadAwareTrait;
 
-    public const DEFAULT_VISIBILITY = Struct::VISIBILITY_PUBLIC;
+    public const DEFAULT_VISIBILITY = Struct::PUBLIC;
 
     private ?string $body = '';
 
@@ -63,9 +63,9 @@ final class Method extends Member implements Element, TypeAware
         return $output;
     }
 
-    public static function create(...$args): self
+    public static function create(string $name): self
     {
-        return new self(...$args);
+        return new self($name);
     }
 
     public static function fromArray(array $from): self
@@ -104,13 +104,13 @@ final class Method extends Member implements Element, TypeAware
         $isInterface = $ref->getDeclaringClass()->isInterface();
 
         if ($isInterface) {
-            $method->setVisibility(Struct::VISIBILITY_PUBLIC);
+            $method->setVisibility(Struct::PUBLIC);
         } elseif ($ref->isPrivate()) {
-            $method->setVisibility(Struct::VISIBILITY_PRIVATE);
+            $method->setVisibility(Struct::PRIVATE);
         } elseif ($ref->isProtected()) {
-            $method->setVisibility(Struct::VISIBILITY_PROTECTED);
+            $method->setVisibility(Struct::PROTECTED);
         } else {
-            $method->setVisibility(Struct::VISIBILITY_PUBLIC);
+            $method->setVisibility(Struct::PUBLIC);
         }
 
         $method->setFinal($ref->isFinal());
@@ -149,7 +149,7 @@ final class Method extends Member implements Element, TypeAware
 
     public function validate(): self
     {
-        if ($this->abstract && ($this->final || $this->visibility === Struct::VISIBILITY_PRIVATE)) {
+        if ($this->abstract && ($this->final || $this->visibility === Struct::PRIVATE)) {
             throw new \DomainException('Cannot be abstract and final or private.');
         }
 
@@ -171,7 +171,7 @@ final class Method extends Member implements Element, TypeAware
 
         $parent = $this->getParent();
         if ($parent) {
-            return $parent->getType() !== Struct::TYPE_INTERFACE;
+            return $parent->getType() !== Struct::_INTERFACE;
         }
 
         return true;

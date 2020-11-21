@@ -15,11 +15,11 @@ class Constant extends Member implements ValueAware
     use Part\CommentAwareTrait;
     use Part\ValueAwareTrait;
 
-    public const DEFAULT_VISIBILITY = Struct::VISIBILITY_PUBLIC;
+    public const DEFAULT_VISIBILITY = Struct::PUBLIC;
 
-    public static function create(...$args): self
+    public static function create(string $name): self
     {
-        return new self(...$args);
+        return new self($name);
     }
 
     public function __toString(): string

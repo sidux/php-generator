@@ -25,7 +25,7 @@ final class Property extends Member implements ValueAware, Element, TypeAware
     use Part\TypeAwareTrait;
     use Part\StaticAwareTrait;
 
-    public const DEFAULT_VISIBILITY = Struct::VISIBILITY_PRIVATE;
+    public const DEFAULT_VISIBILITY = Struct::PRIVATE;
 
     public function __toString(): string
     {
@@ -86,11 +86,11 @@ final class Property extends Member implements ValueAware, Element, TypeAware
         $prop->setComment($ref->getDocComment());
 
         if ($ref->isPrivate()) {
-            $prop->setVisibility(Struct::VISIBILITY_PRIVATE);
+            $prop->setVisibility(Struct::PRIVATE);
         } elseif ($ref->isProtected()) {
-            $prop->setVisibility(Struct::VISIBILITY_PROTECTED);
+            $prop->setVisibility(Struct::PROTECTED);
         } else {
-            $prop->setVisibility(Struct::VISIBILITY_PUBLIC);
+            $prop->setVisibility(Struct::PUBLIC);
         }
 
         return $prop;

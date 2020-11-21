@@ -63,8 +63,8 @@ final class MethodTest extends TestCase
         Assert::assertException(
             static function () {
                 Method::create('foo')
-                      ->setAbstract(true)
-                      ->setVisibility(Struct::VISIBILITY_PRIVATE)
+                      ->setAbstract()
+                      ->setVisibility(Struct::PRIVATE)
                       ->validate()
                 ;
             },
@@ -148,7 +148,7 @@ final class MethodTest extends TestCase
         Assert::assertSame('array', (string)$method->getParameters()['bar']->getTypeHint());
 
         $method = Method::create('variadic')
-                        ->setVariadic(true)
+                        ->setVariadic()
                         ->setBody('return 42;')
         ;
 
@@ -163,7 +163,7 @@ final class MethodTest extends TestCase
 
 
         $method = Method::create('variadic')
-                        ->setVariadic(true)
+                        ->setVariadic()
                         ->setBody('return 42;')
         ;
         $method->addParameter('foo');
@@ -179,7 +179,7 @@ final class MethodTest extends TestCase
 
 
         $method = Method::create('variadic')
-                        ->setVariadic(true)
+                        ->setVariadic()
                         ->setBody('return 42;')
         ;
         $method->addParameter('foo');
@@ -197,7 +197,7 @@ final class MethodTest extends TestCase
 
 
         $method = Method::create('variadic')
-                        ->setVariadic(true)
+                        ->setVariadic()
                         ->setBody('return 42;')
         ;
         $method->addParameter('foo')->addType('array');
@@ -213,10 +213,10 @@ final class MethodTest extends TestCase
 
 
         $method = Method::create('variadic')
-                        ->setVariadic(true)
+                        ->setVariadic()
                         ->setBody('return 42;')
         ;
-        $method->addParameter('foo')->addType('array')->setReference(true);
+        $method->addParameter('foo')->addType('array')->setReference();
 
         Assert::assertSame(
             'function variadic(array &...$foo)
