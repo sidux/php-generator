@@ -297,7 +297,7 @@ final class Struct implements NamespaceAware, Element
     }
 
     /**
-     * @return Constant[]
+     * @return array<string, Constant>
      */
     public function getConstants(): array
     {
@@ -656,6 +656,15 @@ final class Struct implements NamespaceAware, Element
         $this->implements[$name] = new QualifiedName($name);
         $this->implements[$name]->setParent($this);
         $this->implements[$name]->resolve();
+
+        return $this;
+    }
+
+    public function setMembers(Member ...$members): self
+    {
+        foreach ($members as $member) {
+            $this->addMember($member);
+        }
 
         return $this;
     }
