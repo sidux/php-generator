@@ -574,7 +574,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     /**
      * @param string|NamespaceAware $name
      */
-    public function addExtend($name): PhpQualifiedName
+    public function addExtend($name): self
     {
         if ($name instanceof NamespaceAware) {
             $name = $name->getQualifiedName();
@@ -584,7 +584,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
         $this->extends[$name]->setParent($this);
         $this->extends[$name]->resolve();
 
-        return $this->extends[$name];
+        return $this;
     }
 
     public function addGetter(string $propertyName, string $prefix = null): PhpMethod
@@ -647,7 +647,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
     /**
      * @param string|NamespaceAware $name
      */
-    public function addImplement($name): PhpQualifiedName
+    public function addImplement($name): self
     {
         if ($name instanceof NamespaceAware) {
             $name = $name->getQualifiedName();
@@ -657,7 +657,7 @@ final class PhpStruct implements NamespaceAware, PhpElement
         $this->implements[$name]->setParent($this);
         $this->implements[$name]->resolve();
 
-        return $this->implements[$name];
+        return $this;
     }
 
     public function addMember(PhpMember $member): self

@@ -228,6 +228,13 @@ final class PhpMethod extends PhpMember implements PhpElement, TypeAware
         return $this;
     }
 
+    public function addMember(PhpParameter $parameter): self
+    {
+        $this->addParameter($parameter);
+
+        return $this;
+    }
+
     /**
      * @param PhpParameter|string $parameter
      *
