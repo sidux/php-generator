@@ -2,6 +2,7 @@ Sidux PHP Generator
 ===================
 ![Code Analysis](https://github.com/sidux/php-generator/workflows/Code%20Analysis/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/sidux/php-generator/badge.svg?branch=master)](https://coveralls.io/github/sidux/php-generator?branch=master)
+![Type Coverage Status](https://shepherd.dev/github/sidux/php-generator/coverage.svg)
 
 Introduction
 ------------
