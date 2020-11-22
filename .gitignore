@@ -1,4 +1,5 @@
 /vendor
+/build
 /composer.lock
 /lsp
 /.phpunit.result.cache
