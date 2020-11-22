@@ -81,7 +81,9 @@ final class Method extends Member implements Element, TypeAware
     public static function fromReflectionFunction(ReflectionFunction $ref): self
     {
         $method = new self($ref->getName());
-        $method->setParameters(array_map(Parameter::class . '::from', $ref->getParameters()));
+        /** @var  array<string, Parameter> $parameters */
+        $parameters = array_map(Parameter::class . '::from', $ref->getParameters());
+        $method->setParameters($parameters);
         $method->setVariadic($ref->isVariadic());
         $method->setBody($ref->getBodyCode());
         $method->setReference($ref->returnsReference());
@@ -97,7 +99,9 @@ final class Method extends Member implements Element, TypeAware
     public static function fromReflectionMethod(ReflectionMethod $ref): self
     {
         $method = new self($ref->getName());
-        $method->setParameters(array_map(Parameter::class . '::from', $ref->getParameters()));
+        /** @var  array<string, Parameter> $parameters */
+        $parameters = array_map(Parameter::class . '::from', $ref->getParameters());
+        $method->setParameters($parameters);
         $method->setStatic($ref->isStatic());
         $method->setVariadic($ref->isVariadic());
         $isInterface = $ref->getDeclaringClass()->isInterface();
@@ -189,7 +193,7 @@ final class Method extends Member implements Element, TypeAware
     }
 
     /**
-     * @return array<string, Parameter>|\ArrayAccess
+     * @return array<string, Parameter>
      */
     public function getParameters(): array
     {
@@ -197,7 +201,7 @@ final class Method extends Member implements Element, TypeAware
     }
 
     /**
-     * @param array<string, Parameter>|\ArrayAccess $parameters
+     * @param Parameter[] $parameters
      */
     public function setParameters(array $parameters): self
     {
@@ -255,7 +259,12 @@ final class Method extends Member implements Element, TypeAware
      */
     public function getDefaultVisibility(): string
     {
-        return $this->getParent() ? $this->getParent()->getDefaultMethodVisibility() : self::DEFAULT_VISIBILITY;
+        $parent = $this->getParent();
+        if ($parent) {
+            return $parent->getDefaultMethodVisibility();
+        }
+
+        return self::DEFAULT_VISIBILITY;
     }
 
     /**
@@ -263,13 +272,14 @@ final class Method extends Member implements Element, TypeAware
      */
     public function initProperty($initProperty): self
     {
-        if (!$this->getParent()) {
+        $parent = $this->getParent();
+        if (!$parent) {
             throw new \RuntimeException('This method has no parent class');
         }
-        if ($this->getParent()->hasProperty($initProperty)) {
-            $property = $this->getParent()->getProperty($initProperty);
+        if ($parent->hasProperty($initProperty)) {
+            $property = $parent->getProperty($initProperty);
         } else {
-            $property = $this->getParent()->addProperty($initProperty);
+            $property = $parent->addProperty($initProperty);
         }
         $parameter = $this->addParameter($property->getName())
                           ->addTypes($property->getTypes())

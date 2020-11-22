@@ -41,6 +41,11 @@ class Constant extends Member implements ValueAware
      */
     public function getDefaultVisibility(): string
     {
-        return $this->getParent() ? $this->getParent()->getDefaultConstVisibility() : self::DEFAULT_VISIBILITY;
+        $parent = $this->getParent();
+        if ($parent) {
+            return $parent->getDefaultConstVisibility();
+        }
+
+        return self::DEFAULT_VISIBILITY;
     }
 }

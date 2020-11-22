@@ -518,7 +518,7 @@ final class Struct implements NamespaceAware, Element
     }
 
     /**
-     * @return array<string, NamespaceUse>
+     * @return array<int, string>
      */
     public function getNamespaceUsesStrings(): array
     {

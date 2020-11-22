@@ -108,7 +108,12 @@ final class Property extends Member implements ValueAware, Element, TypeAware
      */
     public function getDefaultVisibility(): string
     {
-        return $this->getParent() ? $this->getParent()->getDefaultPropertyVisibility() : self::DEFAULT_VISIBILITY;
+        $parent = $this->getParent();
+        if ($parent) {
+            return $parent->getDefaultPropertyVisibility();
+        }
+
+        return self::DEFAULT_VISIBILITY;
     }
 
     public function resolve(): self
