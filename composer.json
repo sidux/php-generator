@@ -18,7 +18,9 @@
     "phpdocumentor/type-resolver": "^1.0@dev"
   },
   "require-dev": {
+    "php-coveralls/php-coveralls": "^2.4",
     "phpstan/phpstan": "^0.12.0@dev",
+    "phpunit/phpcov": "^8.2",
     "phpunit/phpunit": "^9.2@dev",
     "roave/security-advisories": "dev-master",
     "symfony/var-dumper": "^5.2@dev",
