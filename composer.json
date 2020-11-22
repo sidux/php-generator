@@ -54,7 +54,6 @@
     ],
     "check-code": [
       "@psalm",
-      "@phpstan-config",
       "@phpstan"
     ],
     "test-code": [
@@ -62,8 +61,7 @@
     ],
     "phpunit": "phpunit",
     "psalm": "psalm --threads=4",
-    "phpstan": "vendor/bin/phpstan analyse --ansi --error-format symplify",
-    "phpstan-config": "vendor/bin/phpstan analyse config --ansi --error-format symplify",
+    "phpstan": "vendor/bin/phpstan analyse --ansi",
     "changelog": [
       "vendor/bin/changelog-linker dump-merges --in-categories --ansi",
       "vendor/bin/changelog-linker link --ansi",

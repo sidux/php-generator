@@ -14,9 +14,6 @@ jobs:
           - name: PHPStan
             run: composer phpstan --ansi
 
-          - name: PHPStan for config
-            run: composer phpstan-config
-
           - name: Psalm
             run: composer psalm --ansi
 
