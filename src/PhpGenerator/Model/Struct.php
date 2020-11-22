@@ -15,7 +15,6 @@ use Sidux\PhpGenerator\Helper\StringHelper;
 use Sidux\PhpGenerator\Model\Contract\Element;
 use Sidux\PhpGenerator\Model\Contract\Member;
 use Sidux\PhpGenerator\Model\Contract\NamespaceAware;
-use Sidux\PhpGenerator\Model\Part;
 
 /**
  * @method static self from(ReflectionClass|ReflectionObject|string|object $from)

@@ -9,8 +9,6 @@ use Sidux\PhpGenerator\Helper;
 use Sidux\PhpGenerator\Model\Contract\Element;
 use Sidux\PhpGenerator\Model\Contract\TypeAware;
 use Sidux\PhpGenerator\Model\Contract\ValueAware;
-use Sidux\PhpGenerator\Model\Part;
-
 
 /**
  * @method static self from(ReflectionParameter|string|array $from)

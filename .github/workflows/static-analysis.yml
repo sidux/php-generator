@@ -1,4 +1,4 @@
-name: Static Analysis
+name: Code Analysis
 
 on:
     push:
@@ -6,16 +6,34 @@ on:
           - master
 
 jobs:
-    phpstan:
-        name: PHPStan
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v2
-            - uses: shivammathur/setup-php@v1
-              with:
-                  php-version: 7.4
-                  coverage: none
+  matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        actions:
+          - name: PHPStan
+            run: composer phpstan --ansi
 
-            - run: composer install --no-progress --prefer-dist
-            - run: composer phpstan
-              continue-on-error: true
+          - name: PHPStan for config
+            run: composer phpstan-config
+
+          - name: Psalm
+            run: composer psalm --ansi
+
+          - name: Ecs
+            run: composer ecs --ansi
+
+          - name: UnitTest
+            run: composer test --ansi
+
+    name: ${{ matrix.actions.name }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.4
+          coverage: none
+          tools: composer:v2
+      - run: composer install --no-progress --prefer-dist --ansi
+      - run: ${{ matrix.actions.run }}

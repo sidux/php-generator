@@ -11,7 +11,6 @@ use Sidux\PhpGenerator\Helper\StringHelper;
 use Sidux\PhpGenerator\Model\Contract\Element;
 use Sidux\PhpGenerator\Model\Contract\Member;
 use Sidux\PhpGenerator\Model\Contract\TypeAware;
-use Sidux\PhpGenerator\Model\Part;
 
 /**
  * @method static self from(ReflectionMethod|ReflectionFunction|string|array $from)

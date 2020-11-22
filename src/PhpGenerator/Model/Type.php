@@ -10,7 +10,6 @@ use Sidux\PhpGenerator\Helper\PhpHelper;
 use Sidux\PhpGenerator\Model\Contract\Element;
 use Sidux\PhpGenerator\Model\Contract\NamespaceAware;
 use Sidux\PhpGenerator\Model\Contract\TypeAware;
-use Sidux\PhpGenerator\Model\Part;
 
 class Type implements Element, NamespaceAware
 {

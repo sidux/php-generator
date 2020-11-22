@@ -54,7 +54,7 @@ trait TypeAwareTrait
 
         if (isset($types[Type::ITERABLE])) {
             unset($types[Type::ITERABLE]);
-            foreach ($types as $index => $type) {
+            foreach ($types as $type) {
                 if (!$type->isCollection()) {
                     return null;
                 }
