@@ -1,6 +1,8 @@
 Sidux PHP Generator
 ===================
 
+[![Coverage Status](https://coveralls.io/repos/github/sidux/php-generator/badge.svg?branch=master)](https://coveralls.io/github/sidux/php-generator?branch=master)
+
 Introduction
 ------------
 
