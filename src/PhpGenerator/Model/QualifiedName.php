@@ -6,7 +6,6 @@ namespace Sidux\PhpGenerator\Model;
 
 use Sidux\PhpGenerator\Model\Contract\Member;
 use Sidux\PhpGenerator\Model\Contract\NamespaceAware;
-use Sidux\PhpGenerator\Model\Part;
 
 class QualifiedName extends Member implements NamespaceAware
 {

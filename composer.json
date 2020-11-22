@@ -1,43 +1,82 @@
 {
-    "name": "sidux/php-generator",
-    "description": "PHP Generator",
-    "keywords": ["php", "code", "generator"],
-    "license": [],
-    "authors": [
-        {
-            "name": "Ahmed Lebbada"
-        }
-    ],
-    "require": {
-        "php": ">=7.4",
-        "roave/better-reflection": "^4.0@dev",
-        "phpdocumentor/type-resolver": "^1.0@dev"
-    },
-    "require-dev": {
-        "roave/security-advisories": "dev-master",
-        "vimeo/psalm": "^4.0@dev",
-        "phpunit/phpunit": "^9.2@dev",
-        "phpstan/phpstan": "^0.12.0@dev",
-        "symfony/var-dumper": "^5.2@dev"
-    },
-    "autoload": {
-        "psr-4": {
-            "Sidux\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Sidux\\": "tests/"
-        }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "scripts": {
-        "phpstan": "phpstan analyse --level 5 src"
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.0.0-alpha"
-        }
+  "name": "sidux/php-generator",
+  "description": "PHP Generator",
+  "keywords": [
+    "php",
+    "code",
+    "generator"
+  ],
+  "license": [],
+  "authors": [
+    {
+      "name": "Ahmed Lebbada"
     }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "roave/better-reflection": "^4.0@dev",
+    "phpdocumentor/type-resolver": "^1.0@dev"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^0.12.0@dev",
+    "phpunit/phpunit": "^9.2@dev",
+    "roave/security-advisories": "dev-master",
+    "symfony/var-dumper": "^5.2@dev",
+    "symplify/changelog-linker": "^8.3",
+    "symplify/easy-coding-standard": "^8.3",
+    "vimeo/psalm": "^4.0@dev"
+  },
+  "autoload": {
+    "psr-4": {
+      "Sidux\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Sidux\\": "tests/"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "scripts": {
+    "complete-check": [
+      "@check-cs",
+      "@check-code",
+      "@test-code"
+    ],
+    "check-cs": [
+      "vendor/bin/ecs check --ansi",
+      "vendor/bin/ecs check-markdown README.md --ansi"
+    ],
+    "fix-cs": [
+      "vendor/bin/ecs check --fix --ansi",
+      "vendor/bin/ecs check-markdown README.md --fix --ansi"
+    ],
+    "check-code": [
+      "@psalm",
+      "@phpstan-config",
+      "@phpstan"
+    ],
+    "test-code": [
+      "@phpunit"
+    ],
+    "phpunit": "phpunit",
+    "psalm": "psalm --threads=4",
+    "phpstan": "vendor/bin/phpstan analyse --ansi --error-format symplify",
+    "phpstan-config": "vendor/bin/phpstan analyse config --ansi --error-format symplify",
+    "changelog": [
+      "vendor/bin/changelog-linker dump-merges --in-categories --ansi",
+      "vendor/bin/changelog-linker link --ansi",
+      "vendor/bin/changelog-linker cleanup --ansi"
+    ]
+  },
+  "config": {
+    "sort-packages": true,
+    "process-timeout": 0
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0.0-alpha"
+    }
+  }
 }

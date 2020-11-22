@@ -6,7 +6,6 @@ namespace Sidux\PhpGenerator\Model;
 
 use Sidux\PhpGenerator\Model\Contract\Member;
 use Sidux\PhpGenerator\Model\Contract\ValueAware;
-use Sidux\PhpGenerator\Model\Part;
 
 class Constant extends Member implements ValueAware
 {
