@@ -46,6 +46,7 @@ trait TypeAwareTrait
         }
 
         if (1 === \count($types)) {
+            /** @var \ArrayAccess $types */
             $type = reset($types);
             if (!$type->isCollection() && $type->isHintable()) {
                 return $prefix . $type;
@@ -67,7 +68,7 @@ trait TypeAwareTrait
     }
 
     /**
-     * @return array<string, Type>|\ArrayAccess
+     * @return array<string, Type>
      */
     public function getTypes(): array
     {
