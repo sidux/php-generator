@@ -19,7 +19,7 @@
   },
   "require-dev": {
     "php-coveralls/php-coveralls": "^2.4",
-    "phpstan/phpstan": "^0.12.0@dev",
+    "phpstan/phpstan": "^1.7.15@dev",
     "phpunit/phpcov": "^8.2",
     "phpunit/phpunit": "^9.2@dev",
     "roave/security-advisories": "dev-master",
