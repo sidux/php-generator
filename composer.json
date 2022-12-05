@@ -26,7 +26,7 @@
     "symfony/var-dumper": "^5.2@dev",
     "symplify/changelog-linker": "^8.3",
     "symplify/easy-coding-standard": "^10.2",
-    "vimeo/psalm": "^4.0@dev"
+    "vimeo/psalm": "^5.1@dev"
   },
   "autoload": {
     "psr-4": {
