@@ -71,7 +71,7 @@ final class Method extends Member implements Element, TypeAware
     {
         [$className, $methodName] = $from;
         if (\is_object($className)) {
-            $className = \get_class($className);
+            $className = $className::class;
         }
         $ref = ReflectionMethod::createFromName($className, $methodName);
 

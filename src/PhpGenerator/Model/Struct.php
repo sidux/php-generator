@@ -110,9 +110,7 @@ final class Struct implements NamespaceAware, Element
 
     public function __clone()
     {
-        $clone = static function ($item) {
-            return clone $item;
-        };
+        $clone = static fn($item) => clone $item;
 
         $this->namespaceUses = array_map($clone, $this->namespaceUses);
         $this->traits        = array_map($clone, $this->traits);
@@ -556,9 +554,8 @@ final class Struct implements NamespaceAware, Element
 
     /**
      * @param Constant|string $const
-     * @param mixed $value
      */
-    public function addConstant($const, $value = null): Constant
+    public function addConstant($const, mixed $value = null): Constant
     {
         if (!$const instanceof Constant) {
             $const = new Constant($const);

@@ -16,7 +16,7 @@ class Type implements Element, NamespaceAware
     use Part\NamespaceAwareTrait;
     use Helper\Traits\MethodOverloadAwareTrait;
 
-    public const INTERNAL_TYPES = [
+    final public const INTERNAL_TYPES = [
         'string',
         'bool',
         'int',
@@ -31,7 +31,7 @@ class Type implements Element, NamespaceAware
         'null',
     ];
 
-    public const
+    final public const
         STRING = 'string',
         INT = 'int',
         FLOAT = 'float',
@@ -63,14 +63,14 @@ class Type implements Element, NamespaceAware
         }
 
         $type = (string)$type;
-        if (0 === strncmp($type, '?', 1)) {
+        if (str_starts_with($type, '?')) {
             $this->nullable = true;
             $type           = str_replace('?', '', $type);
         }
         if (!PhpHelper::isNamespaceIdentifier($type)) {
             throw new \InvalidArgumentException("Value '$type' is not a valid type.");
         }
-        if ('[]' === substr($type, -2, 2)) {
+        if (str_ends_with($type, '[]')) {
             $this->collection = true;
             $type             = str_replace('[]', '', $type);
         }
@@ -98,7 +98,7 @@ class Type implements Element, NamespaceAware
     public static function fromReflectionType(ReflectionType $ref): self
     {
         $name = (string)$ref;
-        if (!$ref->isBuiltin() && false === strpos($name, '\\')) {
+        if (!$ref->isBuiltin() && !str_contains($name, '\\')) {
             $name = '\\' . $name;
         }
         $type           = self::create($name);
@@ -116,7 +116,7 @@ class Type implements Element, NamespaceAware
     public static function getType($value): ?string
     {
         if (\is_object($value)) {
-            return \get_class($value);
+            return $value::class;
         }
 
         if (\is_int($value)) {

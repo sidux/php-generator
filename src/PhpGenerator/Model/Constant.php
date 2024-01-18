@@ -7,14 +7,14 @@ namespace Sidux\PhpGenerator\Model;
 use Sidux\PhpGenerator\Model\Contract\Member;
 use Sidux\PhpGenerator\Model\Contract\ValueAware;
 
-class Constant extends Member implements ValueAware
+class Constant extends Member implements ValueAware, \Stringable
 {
     use Part\NamespaceAwareTrait;
     use Part\VisibilityAwareTrait;
     use Part\CommentAwareTrait;
     use Part\ValueAwareTrait;
 
-    public const DEFAULT_VISIBILITY = Struct::PUBLIC;
+    final public const DEFAULT_VISIBILITY = Struct::PUBLIC;
 
     public static function create(string $name): self
     {

@@ -113,7 +113,7 @@ final class VarPrinter
         unset($v);
 
         array_pop($parents);
-        $wrap = false !== strpos($outInline, "\n") || $level * self::INDENT_LENGTH + $column + \strlen($outInline) + 3 > self::$wrapLength;
+        $wrap = str_contains($outInline, "\n") || $level * self::INDENT_LENGTH + $column + \strlen($outInline) + 3 > self::$wrapLength;
 
         return '[' . ($wrap ? $outWrapped : $outInline) . ']';
     }
@@ -128,7 +128,7 @@ final class VarPrinter
             throw new \InvalidArgumentException('Cannot dump closure.');
         }
 
-        $class = \get_class($var);
+        $class = $var::class;
         if ((new ReflectionObject($var))->isAnonymous()) {
             throw new \InvalidArgumentException('Cannot dump anonymous class.');
         }
@@ -170,6 +170,6 @@ final class VarPrinter
 
         return \stdClass::class === $class
             ? "(object) [$out]"
-            : __CLASS__ . "::createObject('$class', [$out])";
+            : self::class . "::createObject('$class', [$out])";
     }
 }

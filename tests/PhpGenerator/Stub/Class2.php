@@ -26,13 +26,13 @@ class Class2 extends \Sidux\PhpGenerator\Stub\Class1 implements \Sidux\PhpGenera
      * @return \Sidux\PhpGenerator\Stub\Class1
      */
     private function &func3(
-        array $a = [],
-        Class2 $b = null,
         \Abc\Unknown $c,
         \Xyz\Unknown $d,
         callable $e,
-        $f = Unknown::ABC,
-        $g
+        $g,
+        array $a = [],
+        Class2 $b = null,
+        $f = Unknown::ABC
     ) {
     }
 

@@ -38,7 +38,7 @@ trait MethodOverloadAwareTrait
                 );
             }
             $types[$i][] = $type;
-            $types[$i]   = array_map([PhpHelper::class, 'extractShortName'], $types[$i]);
+            $types[$i]   = array_map(PhpHelper::extractShortName(...), $types[$i]);
         }
 
         $argsNumber    = \count($args);

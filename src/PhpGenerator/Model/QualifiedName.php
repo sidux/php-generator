@@ -7,7 +7,7 @@ namespace Sidux\PhpGenerator\Model;
 use Sidux\PhpGenerator\Model\Contract\Member;
 use Sidux\PhpGenerator\Model\Contract\NamespaceAware;
 
-class QualifiedName extends Member implements NamespaceAware
+class QualifiedName extends Member implements NamespaceAware, \Stringable
 {
     use Part\NamespaceAwareTrait;
 
