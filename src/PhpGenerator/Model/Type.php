@@ -45,6 +45,11 @@ class Type implements Element, NamespaceAware
         SELF = 'self',
         PARENT = 'parent';
 
+    final public const BACKED_ENUM = [
+        'string',
+        'int',
+    ];
+
     private bool $internal = false;
 
     private bool $collection = false;

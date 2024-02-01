@@ -1,0 +1,13 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Sidux\PhpGenerator\Stub;
+
+enum Gender: string
+{
+    case M = 'M';
+    case F = 'F';
+    case N = 'N';
+    case U = 'U';
+}

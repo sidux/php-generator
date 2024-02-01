@@ -472,10 +472,20 @@ final class StructTest extends TestCase
             ->addPromotedParameter(PromotedParameter::create('propertyTwo')->addType($objectClass))
             ->addPromotedParameter(PromotedParameter::create('propertyThree')->addTypes(['string', 'array', 'null']))
             ->addPromotedParameter(PromotedParameter::create('propertyFour')->addTypes(['string', 'null'])->setValue(null))
-
         ;
 
-
         Assert::assertExpect('ClassType.from.82.expect', $class);
+    }
+
+    /**
+     * @test
+     */
+    public function generatePhp82EnumClass(): void
+    {
+        $class = new Struct('Sidux\PhpGenerator\Stub\Gender');
+        $class->setType('enum');
+        $class->setCases(['M' => 'M', 'F' => 'F', 'N' => 'N', 'U' => 'U']);
+
+        Assert::assertExpect('EnumType.from.82.expect', $class);
     }
 }
