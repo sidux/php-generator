@@ -13,7 +13,7 @@ use Sidux\PhpGenerator\Model\Contract\ValueAware;
 /**
  * @method static self from(ReflectionParameter|string|array $from)
  */
-final class Parameter implements ValueAware, Element, TypeAware
+class Parameter implements ValueAware, Element, TypeAware
 {
     use Part\NameAwareTrait;
     use Part\ValueAwareTrait;
@@ -46,6 +46,11 @@ final class Parameter implements ValueAware, Element, TypeAware
     public function __toString(): string
     {
         $output = '';
+
+        if ($this instanceof PromotedParameter) {
+            $output .= $this->getVisibility() . ' ';
+        }
+
         $output .= (string)$this->getTypeHint() ? $this->getTypeHint() . ' ' : null;
         $output .= $this->isReference() ? '&' : null;
         $output .= $this->isVariadic() ? '...' : null;

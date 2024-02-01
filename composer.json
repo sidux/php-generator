@@ -13,7 +13,7 @@
     }
   ],
   "require": {
-    "php": ">=8.0",
+    "php": ">=8.2",
     "roave/better-reflection": "^6.22.0",
     "phpdocumentor/type-resolver": "^1.0@dev"
   },

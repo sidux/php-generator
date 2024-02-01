@@ -1,0 +1,18 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Sidux\PhpGenerator\Stub;
+
+use Sidux\PhpGenerator\Stub\PropertyTwo;
+
+readonly class RequestClass
+{
+    public function __construct(
+        public string $propertyOne,
+        public PropertyTwo $propertyTwo,
+        public string|array|null $propertyThree,
+        public ?string $propertyFour = null
+    ) {
+    }
+}

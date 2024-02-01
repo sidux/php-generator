@@ -25,6 +25,7 @@ final class Struct implements NamespaceAware, Element
     use Part\NamespaceAwareTrait;
     use Part\FinalAwareTrait;
     use Part\AbstractAwareTrait;
+    use Part\ReadOnlyAwareTrait;
     use Helper\Traits\MethodOverloadAwareTrait;
 
     public const TYPES = [
@@ -131,6 +132,7 @@ final class Struct implements NamespaceAware, Element
         $output .= $this->commentsToString();
         $output .= $this->isAbstract() ? 'abstract ' : null;
         $output .= $this->isFinal() ? 'final ' : null;
+        $output .= $this->isReadOnly() ? 'readonly ' : null;
         $output .= $this->type . ' ';
         $output .= $this->getName();
         $output .= $this->getExtends() ? ' extends ' . implode(', ', $this->getExtends()) : null;

@@ -52,10 +52,17 @@ final class Method extends Member implements Element, TypeAware
         $output .= $this->isReference() ? '&' : null;
         $output .= $this->getName();
         $output .= '(';
-        $output .= implode(', ', $this->getParameters());
+
+        if (\count($this->getParameters()) >= 2) {
+            $output .= "\n";
+            $output .= StringHelper::indent(implode(",\n", $this->getParameters()));
+            $output .= "\n";
+        } else {
+            $output .= implode(', ', $this->getParameters());
+        }
         $output .= ')';
         $output .= $this->getTypeHint() ? ': ' . $this->getTypeHint() : null;
-        $output .= $this->hasBody() ? "\n{\n" : ";\n";
+        $output .= $this->hasBody() ? $this->isBodyEmpty() ? " {\n" : "\n{\n" : ";\n";
         $output .= $this->hasBody() && $this->getBody() ? StringHelper::indent($this->getBody()) . "\n" : null;
         $output .= $this->hasBody() ? "}\n" : null;
 
@@ -254,6 +261,17 @@ final class Method extends Member implements Element, TypeAware
         return $parameter;
     }
 
+    public function addPromotedParameter(string|PromotedParameter $promotedParameter, string $visibility = Struct::PUBLIC): self
+    {
+        if (!$promotedParameter instanceof PromotedParameter) {
+            $promotedParameter = new PromotedParameter($promotedParameter, $visibility);
+        }
+        $promotedParameter->setParent($this);
+        $this->parameters[$promotedParameter->getName()] = $promotedParameter;
+
+        return $this;
+    }
+
     /**
      * @psalm-return value-of<Struct::VISIBILITIES>
      */
@@ -315,5 +333,10 @@ final class Method extends Member implements Element, TypeAware
         }
 
         return $this;
+    }
+
+    public function isBodyEmpty(): bool
+    {
+        return isset($this->body);
     }
 }

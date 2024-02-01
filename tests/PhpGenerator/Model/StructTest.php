@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sidux\PhpGenerator\Model;
 
 use PHPUnit\Framework\TestCase;
+use ReflectionType;
 use Roave\BetterReflection\Reflection\ReflectionClass;
 use Roave\BetterReflection\Reflection\ReflectionObject;
 use Sidux\PhpGenerator\Assert;
@@ -452,5 +453,29 @@ final class StructTest extends TestCase
         ;
 
         Assert::assertExpect('Resolved.expect', $class);
+    }
+
+    /**
+     * @test
+     */
+    public function generate82Class(): void
+    {
+        $class = new Struct('Sidux\PhpGenerator\Stub\RequestClass');
+        $class->setReadOnly(true);
+        $class->addNamespaceUse('Sidux\PhpGenerator\Stub\PropertyTwo');
+
+        $objectClass = new Struct('Sidux\PhpGenerator\Stub\PropertyTwo');
+        $constructor = $class->addConstructor();
+
+        $constructor
+            ->addPromotedParameter(PromotedParameter::create('propertyOne')->addType('string'))
+            ->addPromotedParameter(PromotedParameter::create('propertyTwo')->addType($objectClass))
+            ->addPromotedParameter(PromotedParameter::create('propertyThree')->addTypes(['string', 'array', 'null']))
+            ->addPromotedParameter(PromotedParameter::create('propertyFour')->addTypes(['string', 'null'])->setValue(null))
+
+        ;
+
+
+        Assert::assertExpect('ClassType.from.82.expect', $class);
     }
 }

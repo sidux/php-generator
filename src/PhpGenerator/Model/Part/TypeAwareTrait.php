@@ -40,6 +40,11 @@ trait TypeAwareTrait
     public function getTypeHint(): ?string
     {
         $types  = $this->getTypes();
+        if (\count($types) > 2) {
+            //Add a check to validate types
+            return implode('|', $types);
+        }
+
         $prefix = $this->isNullable() ? '?' : '';
         if (isset($types[Type::NULL])) {
             unset($types[Type::NULL]);
