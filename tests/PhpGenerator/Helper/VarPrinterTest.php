@@ -128,7 +128,7 @@ class VarPrinterTest extends TestCase
 
 
         Assert::assertSame(
-            VarPrinter::class . "::createObject('Sidux\\PhpGenerator\\Stub\\Test2', [\n    \"\\x00Sidux\\\PhpGenerator\\\Stub\\\Test2\\x00c\" => 4,\n    'a' => 1,\n    \"\\x00*\\x00b\" => 2,\n])",
+            VarPrinter::class . "::createObject('Sidux\\PhpGenerator\\Stub\\Test2', [\n    'a' => 1,\n    \"\\x00*\\x00b\" => 2,\n    \"\\x00Sidux\\\PhpGenerator\\\Stub\\\Test2\\x00c\" => 4,\n])",
             VarPrinter::dump(new Test2())
         );
         /** @noinspection PhpUnreachableStatementInspection */

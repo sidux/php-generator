@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sidux\PhpGenerator\Model;
 
 use PHPUnit\Framework\TestCase;
-use ReflectionType;
 use Roave\BetterReflection\Reflection\ReflectionClass;
 use Roave\BetterReflection\Reflection\ReflectionObject;
 use Sidux\PhpGenerator\Assert;
@@ -462,17 +461,29 @@ final class StructTest extends TestCase
     {
         $class = new Struct('Sidux\PhpGenerator\Stub\RequestClass');
         $class->setReadOnly(true);
-        $class->addNamespaceUse('Sidux\PhpGenerator\Stub\PropertyTwo');
 
-        $objectClass = new Struct('Sidux\PhpGenerator\Stub\PropertyTwo');
+        $objectClass = new Struct('PhpGenerator\Stub\SubNamespace\PropertyTwo');
         $constructor = $class->addConstructor();
 
-        $constructor
-            ->addPromotedParameter(PromotedParameter::create('propertyOne')->addType('string'))
-            ->addPromotedParameter(PromotedParameter::create('propertyTwo')->addType($objectClass))
-            ->addPromotedParameter(PromotedParameter::create('propertyThree')->addTypes(['string', 'array', 'null']))
-            ->addPromotedParameter(PromotedParameter::create('propertyFour')->addTypes(['string', 'null'])->setValue(null))
-        ;
+        $constructor->setParameters([
+            Parameter::create('propertyOne')
+                ->addType('string')
+                ->setVisibility(Struct::PUBLIC)
+                ->setPromoted(),
+            Parameter::create('propertyTwo')
+                ->addType($objectClass)
+                ->setVisibility(Struct::PUBLIC)
+                ->setPromoted(),
+            Parameter::create('propertyThree')
+                ->addTypes(['string', 'array', 'null'])
+                ->setVisibility(Struct::PUBLIC)
+                ->setPromoted(),
+            Parameter::create('propertyFour')
+                ->addTypes(['string', 'null'])
+                ->setValue(null)
+                ->setVisibility(Struct::PUBLIC)
+                ->setPromoted(),
+        ]);
 
         Assert::assertExpect('ClassType.from.82.expect', $class);
     }

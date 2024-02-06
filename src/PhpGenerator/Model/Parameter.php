@@ -9,6 +9,7 @@ use Sidux\PhpGenerator\Helper;
 use Sidux\PhpGenerator\Model\Contract\Element;
 use Sidux\PhpGenerator\Model\Contract\TypeAware;
 use Sidux\PhpGenerator\Model\Contract\ValueAware;
+use Sidux\PhpGenerator\Model\Part\ReadOnlyAwareTrait;
 
 /**
  * @method static self from(ReflectionParameter|string|array $from)
@@ -19,9 +20,15 @@ class Parameter implements ValueAware, Element, TypeAware
     use Part\ValueAwareTrait;
     use Part\TypeAwareTrait;
     use Part\ReferenceAwareTrait;
+    use Part\VisibilityAwareTrait;
     use Helper\Traits\MethodOverloadAwareTrait;
+    use ReadOnlyAwareTrait;
+
+    final public const DEFAULT_VISIBILITY = Struct::PRIVATE;
 
     private ?Method $parent = null;
+
+    private bool $isPromoted = false;
 
     public function __construct(string $name)
     {
@@ -46,11 +53,8 @@ class Parameter implements ValueAware, Element, TypeAware
     public function __toString(): string
     {
         $output = '';
-
-        if ($this instanceof PromotedParameter) {
-            $output .= $this->getVisibility() . ' ';
-        }
-
+        $output .= $this->isPromoted() ? $this->getVisibility() . ' ' : null;
+        $output .= $this->isReadOnly() ? 'readonly ' : null;
         $output .= (string)$this->getTypeHint() ? $this->getTypeHint() . ' ' : null;
         $output .= $this->isReference() ? '&' : null;
         $output .= $this->isVariadic() ? '...' : null;
@@ -110,5 +114,31 @@ class Parameter implements ValueAware, Element, TypeAware
         }
 
         return $this;
+    }
+
+    public function getDefaultVisibility(): string
+    {
+        $parent = $this->getParent();
+        if ($parent) {
+            return $parent->getDefaultParameterVisibility();
+        }
+
+        return self::DEFAULT_VISIBILITY;
+    }
+
+    public function setPromoted(): self
+    {
+        if ($this->getParent() && $this->getParent()->getName() !== Method::CONSTRUCTOR) {
+            throw new \RuntimeException('Promotion is only allowed for constructor parameters');
+        }
+
+        $this->isPromoted = true;
+
+        return $this;
+    }
+
+    public function isPromoted(): bool
+    {
+        return $this->isPromoted;
     }
 }

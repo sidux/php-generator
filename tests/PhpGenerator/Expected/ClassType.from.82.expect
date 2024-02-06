@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sidux\PhpGenerator\Stub;
 
-use Sidux\PhpGenerator\Stub\PropertyTwo;
+use PhpGenerator\Stub\SubNamespace\PropertyTwo;
 
 readonly class RequestClass
 {
@@ -13,6 +13,7 @@ readonly class RequestClass
         public PropertyTwo $propertyTwo,
         public string|array|null $propertyThree,
         public ?string $propertyFour = null
-    ) {
+    )
+    {
     }
 }

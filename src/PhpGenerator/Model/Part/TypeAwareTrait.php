@@ -41,7 +41,6 @@ trait TypeAwareTrait
     {
         $types  = $this->getTypes();
         if (\count($types) > 2) {
-            //Add a check to validate types
             return implode('|', $types);
         }
 
@@ -101,9 +100,9 @@ trait TypeAwareTrait
         return false;
     }
 
-    public function addTypeFromNamespaceAware(NamespaceAware $stuct): self
+    public function addTypeFromNamespaceAware(NamespaceAware $struct): self
     {
-        $type = $stuct->getQualifiedName();
+        $type = $struct->getQualifiedName();
 
         return $this->addTypeFromString($type);
     }
