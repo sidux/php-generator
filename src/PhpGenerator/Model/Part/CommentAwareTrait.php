@@ -27,7 +27,7 @@ trait CommentAwareTrait
         return $this->comments;
     }
 
-    public function setComment(string $value): self
+    public function setComment(?string $value): self
     {
         if (!$value) {
             return $this;

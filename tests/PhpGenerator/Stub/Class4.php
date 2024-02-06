@@ -4,5 +4,5 @@ namespace Sidux\PhpGenerator\Stub;
 
 class Class4
 {
-    const THE_CONSTANT = 9;
+    final public const THE_CONSTANT = 9;
 }

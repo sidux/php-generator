@@ -29,6 +29,8 @@ final class Method extends Member implements Element, TypeAware
 
     public const DEFAULT_VISIBILITY = Struct::PUBLIC;
 
+    public const CONSTRUCTOR = '__construct';
+
     private ?string $body = '';
 
     /**
@@ -37,6 +39,11 @@ final class Method extends Member implements Element, TypeAware
     private array $parameters = [];
 
     private bool $variadic = false;
+
+    /**
+     * @psalm-var value-of<Struct::VISIBILITIES>
+     */
+    private string $defaultParameterVisibility = Parameter::DEFAULT_VISIBILITY;
 
     public function __toString(): string
     {
@@ -52,7 +59,9 @@ final class Method extends Member implements Element, TypeAware
         $output .= $this->isReference() ? '&' : null;
         $output .= $this->getName();
         $output .= '(';
-        $output .= implode(', ', $this->getParameters());
+        $output .= $this->hasMoreThanTwoParameters() ? "\n" : null;
+        $output .= $this->hasMoreThanTwoParameters() ? StringHelper::indent(implode(",\n", $this->getParameters())) : implode(', ', $this->getParameters());
+        $output .= $this->hasMoreThanTwoParameters() ? "\n" : null;
         $output .= ')';
         $output .= $this->getTypeHint() ? ': ' . $this->getTypeHint() : null;
         $output .= $this->hasBody() ? "\n{\n" : ";\n";
@@ -60,6 +69,11 @@ final class Method extends Member implements Element, TypeAware
         $output .= $this->hasBody() ? "}\n" : null;
 
         return $output;
+    }
+
+    private function hasMoreThanTwoParameters(): bool
+    {
+        return \count($this->getParameters()) > 2;
     }
 
     public static function create(string $name): self
@@ -71,7 +85,7 @@ final class Method extends Member implements Element, TypeAware
     {
         [$className, $methodName] = $from;
         if (\is_object($className)) {
-            $className = \get_class($className);
+            $className = $className::class;
         }
         $ref = ReflectionMethod::createFromName($className, $methodName);
 
@@ -265,6 +279,14 @@ final class Method extends Member implements Element, TypeAware
         }
 
         return self::DEFAULT_VISIBILITY;
+    }
+
+    /**
+     * @psalm-return value-of<Struct::VISIBILITIES>
+     */
+    public function getDefaultParameterVisibility(): string
+    {
+        return $this->defaultParameterVisibility;
     }
 
     /**

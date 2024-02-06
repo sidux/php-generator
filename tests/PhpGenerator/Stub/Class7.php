@@ -7,7 +7,7 @@ namespace Sidux\PhpGenerator\Stub;
 class Class7
 {
     public \A $a;
-    public ?\B $b;
+    public ?\B $b = null;
     public ?\C $c = null;
     public ?int $i = 1;
 }

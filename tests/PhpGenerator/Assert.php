@@ -58,7 +58,7 @@ class Assert extends BaseAssert
             try {
                 $reflection     = new \ReflectionClass($throwableClass);
                 $throwableClass = $reflection->getName();
-            } catch (\ReflectionException $e) {
+            } catch (\ReflectionException) {
                 static::fail(
                     sprintf(
                         '%s of type "%s" does not exist.',
@@ -117,7 +117,6 @@ class Assert extends BaseAssert
     }
 
     /**
-     * @param \Throwable $throwable
      * @param int|string|null $expectedCode
      */
     private static function checkThrowableCode(\Throwable $throwable, $expectedCode): void
@@ -126,7 +125,7 @@ class Assert extends BaseAssert
             static::assertEquals(
                 $expectedCode,
                 $throwable->getCode(),
-                sprintf('Failed asserting the code of thrown %s.', \get_class($throwable))
+                sprintf('Failed asserting the code of thrown %s.', $throwable::class)
             );
         }
     }
@@ -137,14 +136,12 @@ class Assert extends BaseAssert
             static::assertStringContainsString(
                 $throwable->getMessage(),
                 $expectedMessage,
-                sprintf('Failed asserting the message of thrown %s.', \get_class($throwable))
+                sprintf('Failed asserting the message of thrown %s.', $throwable::class)
             );
         }
     }
 
     /**
-     * @param string $expectedThrowableClass
-     *
      * @throws AssertionFailedError
      */
     private static function failAssertingThrowable(string $expectedThrowableClass): void

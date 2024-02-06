@@ -8,9 +8,9 @@ class Class5
     public function func1(
         \Sidux\PhpGenerator\Stub\A $a,
         ?\Sidux\PhpGenerator\Stub\B $b,
+        \E $e,
         ?\C $c = null,
         \D $d = null,
-        \E $e,
         ?int $i = 1,
         ?array $arr = []
     ) {

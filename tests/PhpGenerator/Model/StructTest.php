@@ -453,4 +453,50 @@ final class StructTest extends TestCase
 
         Assert::assertExpect('Resolved.expect', $class);
     }
+
+    /**
+     * @test
+     */
+    public function generate82Class(): void
+    {
+        $class = new Struct('Sidux\PhpGenerator\Stub\RequestClass');
+        $class->setReadOnly(true);
+
+        $objectClass = new Struct('PhpGenerator\Stub\SubNamespace\PropertyTwo');
+        $constructor = $class->addConstructor();
+
+        $constructor->setParameters([
+            Parameter::create('propertyOne')
+                ->addType('string')
+                ->setVisibility(Struct::PUBLIC)
+                ->setPromoted(),
+            Parameter::create('propertyTwo')
+                ->addType($objectClass)
+                ->setVisibility(Struct::PUBLIC)
+                ->setPromoted(),
+            Parameter::create('propertyThree')
+                ->addTypes(['string', 'array', 'null'])
+                ->setVisibility(Struct::PUBLIC)
+                ->setPromoted(),
+            Parameter::create('propertyFour')
+                ->addTypes(['string', 'null'])
+                ->setValue(null)
+                ->setVisibility(Struct::PUBLIC)
+                ->setPromoted(),
+        ]);
+
+        Assert::assertExpect('ClassType.from.82.expect', $class);
+    }
+
+    /**
+     * @test
+     */
+    public function generatePhp82EnumClass(): void
+    {
+        $class = new Struct('Sidux\PhpGenerator\Stub\Gender');
+        $class->setType('enum');
+        $class->setCases(['M' => 'M', 'F' => 'F', 'N' => 'N', 'U' => 'U']);
+
+        Assert::assertExpect('EnumType.from.82.expect', $class);
+    }
 }

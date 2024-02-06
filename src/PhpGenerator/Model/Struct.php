@@ -25,18 +25,21 @@ final class Struct implements NamespaceAware, Element
     use Part\NamespaceAwareTrait;
     use Part\FinalAwareTrait;
     use Part\AbstractAwareTrait;
+    use Part\ReadOnlyAwareTrait;
     use Helper\Traits\MethodOverloadAwareTrait;
 
     public const TYPES = [
         Struct::_CLASS,
         Struct::_INTERFACE,
         Struct::_TRAIT,
+        Struct::_ENUM
     ];
 
     public const
         _CLASS = 'class',
         _INTERFACE = 'interface',
-        _TRAIT = 'trait';
+        _TRAIT = 'trait',
+        _ENUM = 'enum';
 
     public const VISIBILITIES = [
         Struct::PUBLIC,
@@ -108,11 +111,19 @@ final class Struct implements NamespaceAware, Element
      */
     private string $defaultMethodVisibility = Method::DEFAULT_VISIBILITY;
 
+    /**
+     * @psalm-var value-of<Type::BACKED_ENUM>
+     */
+    private ?string $enumType = null;
+
+    /**
+     * @var array<EnumCase>
+     */
+    private array $cases = [];
+
     public function __clone()
     {
-        $clone = static function ($item) {
-            return clone $item;
-        };
+        $clone = static fn($item) => clone $item;
 
         $this->namespaceUses = array_map($clone, $this->namespaceUses);
         $this->traits        = array_map($clone, $this->traits);
@@ -133,8 +144,10 @@ final class Struct implements NamespaceAware, Element
         $output .= $this->commentsToString();
         $output .= $this->isAbstract() ? 'abstract ' : null;
         $output .= $this->isFinal() ? 'final ' : null;
+        $output .= $this->isReadOnly() ? 'readonly ' : null;
         $output .= $this->type . ' ';
         $output .= $this->getName();
+        $output .= $this->isBackedEnum() ? ": $this->enumType" : null;
         $output .= $this->getExtends() ? ' extends ' . implode(', ', $this->getExtends()) : null;
         $output .= $this->getImplements() ? ' implements ' . implode(', ', $this->getImplements()) : null;
         $output .= "\n{\n";
@@ -145,8 +158,15 @@ final class Struct implements NamespaceAware, Element
                 implode("\n", $this->getConstants()),
                 implode("\n", $this->getProperties()),
                 implode("\n", $this->getMethods()),
+                implode("\n", $this->getCases()),
             ]
         );
+
+        if (\count($this->getCases()) > 0) {
+            $lastCase = array_pop($members);
+            $members[] = $lastCase . "\n";
+        }
+
         $output  .= $members ? StringHelper::indent(implode("\n", $members)) : null;
         $output  .= "}\n";
 
@@ -556,9 +576,8 @@ final class Struct implements NamespaceAware, Element
 
     /**
      * @param Constant|string $const
-     * @param mixed $value
      */
-    public function addConstant($const, $value = null): Constant
+    public function addConstant($const, mixed $value = null): Constant
     {
         if (!$const instanceof Constant) {
             $const = new Constant($const);
@@ -784,5 +803,49 @@ final class Struct implements NamespaceAware, Element
         if (!PhpHelper::isNamespaceIdentifier($name)) {
             throw new \InvalidArgumentException("Value '$name' is not valid class name.");
         }
+    }
+
+    public function isBackedEnum(): bool
+    {
+        return isset($this->enumType);
+    }
+
+    public function getCases(): array
+    {
+        return $this->cases;
+    }
+
+    /**
+     * @psalm-param value-of<Type::BACKED_ENUM> $type
+     */
+    public function setEnumType(string $type): void
+    {
+        if (!in_array($type, Type::BACKED_ENUM, true)) {
+            throw new \InvalidArgumentException("Invalid backed enum type '$type'.");
+        }
+
+        $this->enumType = $type;
+    }
+
+    public function setCases(array $cases): void
+    {
+        $firstCase = reset($cases);
+        $enumType = gettype($firstCase);
+
+        $enumCases = [];
+
+        foreach ($cases as $name => $value) {
+            if (gettype($value) !== $enumType) {
+                throw new \InvalidArgumentException("All cases of the enum must be of the same type.");
+            }
+
+            $enumCase = EnumCase::create($name);
+            $enumCase->setValue($value);
+
+            $enumCases[] = $enumCase;
+        }
+
+        $this->setEnumType($enumType);
+        $this->cases = $enumCases;
     }
 }

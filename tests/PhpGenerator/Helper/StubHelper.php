@@ -13,7 +13,7 @@ class StubHelper
             throw new \RuntimeException("file $filePath does not exist or is not readable");
         }
         $content = file_get_contents($filePath);
-        if ($require && strpos($content, '<?php') !== false) {
+        if ($require && str_contains($content, '<?php')) {
             /** @noinspection PhpIncludeInspection */
             require_once $filePath;
             $content = preg_replace("#<\?php\s*\n*#", '', $content);

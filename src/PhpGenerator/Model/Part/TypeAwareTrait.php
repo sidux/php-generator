@@ -40,6 +40,10 @@ trait TypeAwareTrait
     public function getTypeHint(): ?string
     {
         $types  = $this->getTypes();
+        if (\count($types) > 2) {
+            return implode('|', $types);
+        }
+
         $prefix = $this->isNullable() ? '?' : '';
         if (isset($types[Type::NULL])) {
             unset($types[Type::NULL]);
@@ -96,9 +100,9 @@ trait TypeAwareTrait
         return false;
     }
 
-    public function addTypeFromNamespaceAware(NamespaceAware $stuct): self
+    public function addTypeFromNamespaceAware(NamespaceAware $struct): self
     {
-        $type = $stuct->getQualifiedName();
+        $type = $struct->getQualifiedName();
 
         return $this->addTypeFromString($type);
     }

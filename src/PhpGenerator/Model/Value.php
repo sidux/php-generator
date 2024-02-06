@@ -7,21 +7,12 @@ namespace Sidux\PhpGenerator\Model;
 use Sidux\PhpGenerator\Helper\VarPrinter;
 use Sidux\PhpGenerator\Model\Contract\ValueAware;
 
-class Value
+class Value implements \Stringable
 {
-    private $value;
-
-    private bool $literal;
-
     private ?ValueAware $parent = null;
 
-    /**
-     * @param mixed $value
-     */
-    public function __construct($value, bool $literal = true)
+    public function __construct(private readonly mixed $value, private readonly bool $literal = true)
     {
-        $this->value   = $value;
-        $this->literal = $literal;
     }
 
     public function __toString(): string
